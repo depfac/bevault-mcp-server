@@ -1,4 +1,5 @@
 """Information mart creation request models."""
+
 from typing import List, Optional
 
 from pydantic import Field
@@ -66,4 +67,6 @@ class UpdateInformationMartScriptRequest(BeVaultRequest):
     order: Optional[int] = None
     timeout: Optional[int] = None
     code: Optional[str] = None
-    columns: List[UpdateInformationMartScriptColumnRequest] = Field(default_factory=list)
+    columns: List[UpdateInformationMartScriptColumnRequest] = Field(
+        default_factory=list
+    )

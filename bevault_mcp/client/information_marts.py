@@ -1,4 +1,5 @@
 """Information marts client."""
+
 import logging
 from typing import Any, Dict, Optional
 
@@ -22,7 +23,11 @@ class InformationMartsClient(BaseClient):
 
     @BaseClient._retry_decorator()
     def search(
-        self, project_id: str, index: int = 0, limit: int = 10, filter: Optional[str] = None
+        self,
+        project_id: str,
+        index: int = 0,
+        limit: int = 10,
+        filter: Optional[str] = None,
     ) -> InformationMartsResponse:
         """Search information marts in a project."""
         query: Dict[str, Any] = {"index": index, "limit": limit}
@@ -36,7 +41,9 @@ class InformationMartsClient(BaseClient):
         return InformationMartsResponse.model_validate(data)
 
     @BaseClient._retry_decorator()
-    def get_information_mart_by_id(self, project_id: str, information_mart_id: str) -> InformationMart:
+    def get_information_mart_by_id(
+        self, project_id: str, information_mart_id: str
+    ) -> InformationMart:
         """Get information mart by ID in a project. Returns the information mart entity."""
         path = f"/metavault/api/projects/{project_id}/informationmarts/{information_mart_id}"
         logger.debug("GET %s", path)
@@ -45,12 +52,19 @@ class InformationMartsClient(BaseClient):
         data = resp.json()
         return InformationMart.model_validate(data)
 
-    def _resolve_information_mart_id(self, project_id: str, information_mart_id_or_name: str) -> str:
+    def _resolve_information_mart_id(
+        self, project_id: str, information_mart_id_or_name: str
+    ) -> str:
         """Resolve information mart ID from either ID or name."""
         if is_guid(information_mart_id_or_name):
             return information_mart_id_or_name
         # Search for information mart by name
-        result = self.search(project_id, index=0, limit=1000, filter=f"name contains {information_mart_id_or_name}")
+        result = self.search(
+            project_id,
+            index=0,
+            limit=1000,
+            filter=f"name contains {information_mart_id_or_name}",
+        )
         for im in result.information_marts:
             if im.name == information_mart_id_or_name:
                 return im.id
@@ -58,7 +72,11 @@ class InformationMartsClient(BaseClient):
 
     @BaseClient._retry_decorator()
     def get_scripts(
-        self, project_id: str, information_mart_id: str, index: int = 0, limit: int = 1000
+        self,
+        project_id: str,
+        information_mart_id: str,
+        index: int = 0,
+        limit: int = 1000,
     ) -> list[InformationMartScript]:
         """Get scripts for an information mart. Returns list of scripts."""
         # The scripts are embedded in the information mart response
@@ -66,7 +84,9 @@ class InformationMartsClient(BaseClient):
         im = self.get_information_mart_by_id(project_id, information_mart_id)
         return im.scripts
 
-    def _resolve_script_id(self, project_id: str, information_mart_id: str, script_id_or_name: str) -> str:
+    def _resolve_script_id(
+        self, project_id: str, information_mart_id: str, script_id_or_name: str
+    ) -> str:
         """Resolve script ID from either ID or name."""
         if is_guid(script_id_or_name):
             return script_id_or_name
@@ -75,7 +95,9 @@ class InformationMartsClient(BaseClient):
         for script in scripts:
             if script.name == script_id_or_name:
                 return script.id
-        raise ValueError(f"Script '{script_id_or_name}' not found in information mart '{information_mart_id}'")
+        raise ValueError(
+            f"Script '{script_id_or_name}' not found in information mart '{information_mart_id}'"
+        )
 
     @BaseClient._retry_decorator()
     def get_script(
@@ -119,7 +141,9 @@ class InformationMartsClient(BaseClient):
     ) -> InformationMart:
         """Create an information mart in a project. Returns the created information mart entity."""
         path = f"/metavault/api/projects/{project_id}/informationmarts"
-        logger.debug("POST %s body=%s", path, information_mart_request.model_dump(mode="json"))
+        logger.debug(
+            "POST %s body=%s", path, information_mart_request.model_dump(mode="json")
+        )
         resp = self._client.post(
             path,
             json=information_mart_request.model_dump(mode="json", exclude_none=True),
@@ -137,9 +161,13 @@ class InformationMartsClient(BaseClient):
         information_mart_request: CreateInformationMartRequest,
     ) -> InformationMart:
         """Update an information mart in a project. Returns the updated information mart entity."""
-        information_mart_id = self._resolve_information_mart_id(project_id, information_mart_id_or_name)
+        information_mart_id = self._resolve_information_mart_id(
+            project_id, information_mart_id_or_name
+        )
         path = f"/metavault/api/projects/{project_id}/informationmarts/{information_mart_id}"
-        logger.debug("PUT %s body=%s", path, information_mart_request.model_dump(mode="json"))
+        logger.debug(
+            "PUT %s body=%s", path, information_mart_request.model_dump(mode="json")
+        )
         resp = self._client.put(
             path,
             json=information_mart_request.model_dump(mode="json", exclude_none=True),
@@ -152,7 +180,9 @@ class InformationMartsClient(BaseClient):
     @BaseClient._retry_decorator()
     def delete(self, project_id: str, information_mart_id_or_name: str) -> None:
         """Delete an information mart from a project."""
-        information_mart_id = self._resolve_information_mart_id(project_id, information_mart_id_or_name)
+        information_mart_id = self._resolve_information_mart_id(
+            project_id, information_mart_id_or_name
+        )
         path = f"/metavault/api/projects/{project_id}/informationmarts/{information_mart_id}"
         logger.debug("DELETE %s", path)
         resp = self._client.delete(path, headers=self._get_auth_headers())
@@ -216,11 +246,11 @@ class InformationMartsClient(BaseClient):
         """Update a script's code only. Fetches existing script first, then updates with full payload. Returns the updated script entity."""
         # Fetch existing script to get all metadata
         existing_script = self.get_script(project_id, information_mart_id, script_id)
-        
+
         # Create updated script dict with new code
         script_data = existing_script.model_dump(mode="json", exclude_none=True)
         script_data["code"] = code
-        
+
         # Send PUT request with full payload
         path = f"/metavault/api/projects/{project_id}/informationmarts/{information_mart_id}/scripts/{script_id}"
         logger.debug("PUT %s body=%s (code updated)", path, script_data)

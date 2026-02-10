@@ -1,7 +1,8 @@
 """Staging table mapping entity models."""
+
 from typing import List, Optional, Union
 
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import BaseModel, Field, model_validator
 
 
 class BusinessKeyMapping(BaseModel):
@@ -23,7 +24,7 @@ class DependentChildColumnMapping(BaseModel):
 
     dependentChildId: str = Field(alias="linkColumnId")
     stagingTableColumnId: str = Field(alias="tableColumnId")
-    
+
     model_config = {"populate_by_name": True}
 
 
@@ -32,7 +33,7 @@ class DataColumnMapping(BaseModel):
 
     dataColumnId: str = Field(alias="linkColumnId")
     stagingTableColumnId: str = Field(alias="tableColumnId")
-    
+
     model_config = {"populate_by_name": True}
 
 
@@ -72,8 +73,12 @@ class LinkMapping(BaseMapping):
     mappingType: str = "Link"
     linkId: str
     isFullLoad: bool
-    hubReferenceColumnMappings: List[HubReferenceColumnMapping] = Field(default_factory=list)
-    dependentChildColumnMappings: List[DependentChildColumnMapping] = Field(default_factory=list)
+    hubReferenceColumnMappings: List[HubReferenceColumnMapping] = Field(
+        default_factory=list
+    )
+    dependentChildColumnMappings: List[DependentChildColumnMapping] = Field(
+        default_factory=list
+    )
     dataColumnMappings: List[DataColumnMapping] = Field(default_factory=list)
 
 

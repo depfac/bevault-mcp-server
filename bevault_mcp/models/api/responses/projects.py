@@ -1,4 +1,5 @@
 """Projects response models."""
+
 from typing import List
 
 from pydantic import BaseModel, Field
@@ -27,4 +28,3 @@ class ProjectsResponse(PaginatedResponse):
     def projects(self) -> List[Project]:
         """Convenience property to directly access the projects list."""
         return self.embedded.projects
-

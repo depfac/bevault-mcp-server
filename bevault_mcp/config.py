@@ -24,5 +24,3 @@ class Settings:
             bevault_base_url=base_url,
             request_timeout_seconds=timeout,
         )
-
-

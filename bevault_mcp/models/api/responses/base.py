@@ -1,4 +1,5 @@
 """Base response models."""
+
 from typing import Any
 
 from pydantic import BaseModel, Field
@@ -15,4 +16,3 @@ class PaginatedResponse(PaginatedResponseMixin, BaseModel):
     total: int
     filter: str | None = None
     expand: list[str] = Field(default_factory=list)
-

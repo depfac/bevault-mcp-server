@@ -1,4 +1,5 @@
 """Project entity model."""
+
 from typing import Optional
 
 from ..base import BeVaultEntity
@@ -15,4 +16,3 @@ class Project(BeVaultEntity):
     numberOfHubs: Optional[int] = None
     numberOfSources: Optional[int] = None
     numberOfDataQualityControls: Optional[int] = None
-

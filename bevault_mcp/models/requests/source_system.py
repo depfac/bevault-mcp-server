@@ -1,4 +1,5 @@
 """Source system creation request models."""
+
 from typing import Optional
 
 from ..api.base import BeVaultRequest
@@ -27,4 +28,3 @@ class CreateDataPackageRequest(BeVaultRequest):
     refreshType: Optional[str] = None
     formatInfo: Optional[str] = None
     expectedQuality: Optional[int] = None
-

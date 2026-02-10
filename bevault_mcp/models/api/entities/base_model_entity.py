@@ -1,5 +1,6 @@
 """Base model entity with common fields."""
-from typing import Any, Dict, List, Optional
+
+from typing import Any, Dict, Optional
 
 from ..base import BeVaultEntity
 
@@ -14,4 +15,3 @@ class BaseModelEntity(BeVaultEntity):
     businessDescription: Optional[str] = None
     technicalDescription: Optional[str] = None
     _embedded: Optional[Dict[str, Any]] = None
-

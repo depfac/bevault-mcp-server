@@ -1,5 +1,6 @@
 """Link entity model."""
-from typing import Any, Dict, List, Literal, Optional
+
+from typing import Any, List, Literal, Optional
 
 from pydantic import Field, model_validator
 
@@ -64,8 +65,13 @@ class Link(BaseModelEntity):
             embedded = result["_embedded"]
             if "hubReferences" in embedded:
                 hub_refs_embedded = embedded["hubReferences"]
-                if isinstance(hub_refs_embedded, dict) and "_embedded" in hub_refs_embedded:
-                    hub_refs_list = hub_refs_embedded["_embedded"].get("hubReferences", [])
+                if (
+                    isinstance(hub_refs_embedded, dict)
+                    and "_embedded" in hub_refs_embedded
+                ):
+                    hub_refs_list = hub_refs_embedded["_embedded"].get(
+                        "hubReferences", []
+                    )
                     if isinstance(hub_refs_list, list):
                         hub_references = hub_refs_list
 
@@ -79,4 +85,3 @@ class Link(BaseModelEntity):
             result["dataColumns"] = []
 
         return result
-

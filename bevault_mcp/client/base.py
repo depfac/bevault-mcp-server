@@ -1,10 +1,16 @@
 """Base client with common HTTP functionality."""
+
 import logging
 from typing import Dict
 
 import httpx
 from fastmcp.server.dependencies import get_http_headers
-from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
+from tenacity import (
+    retry,
+    retry_if_exception_type,
+    stop_after_attempt,
+    wait_exponential,
+)
 
 from ..config import Settings
 
@@ -35,4 +41,3 @@ class BaseClient:
             wait=wait_exponential(multiplier=0.5, min=0.5, max=4),
             retry=retry_if_exception_type((httpx.TransportError, httpx.ReadTimeout)),
         )
-

@@ -1,4 +1,5 @@
 """Optimized response models for MCP tools (token-efficient)."""
+
 from .search import (
     OptimizedEntity,
     OptimizedHub,
@@ -36,4 +37,3 @@ __all__ = [
     "PagingInfo",
     "StagingTableInfo",
 ]
-

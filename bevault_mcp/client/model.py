@@ -1,6 +1,6 @@
 """Model client for hubs, links, satellites, etc."""
+
 import logging
-from typing import Optional
 
 from ..models import (
     Hub,
@@ -21,8 +21,8 @@ class ModelClient(BaseClient):
     """Client for model operations (hubs, links, satellites, search)."""
 
     @BaseClient._retry_decorator()
-    def search(self, params: SearchParams, project_id: Optional[str] = None) -> SearchResponse:
-        """Search model entities. If project_id is None, uses the configured project ID."""
+    def search(self, params: SearchParams, project_id: str) -> SearchResponse:
+        """Search model entities."""
         query = {
             "index": params.index,
             "limit": params.limit,
@@ -128,7 +128,9 @@ class ModelClient(BaseClient):
         return Link.model_validate(data)
 
     @BaseClient._retry_decorator()
-    def update_hub(self, project_id: str, hub_id_or_name: str, hub_request: CreateHubRequest) -> Hub:
+    def update_hub(
+        self, project_id: str, hub_id_or_name: str, hub_request: CreateHubRequest
+    ) -> Hub:
         """Update a hub in a project. Returns the updated hub entity."""
         hub_id = self._resolve_hub_id(project_id, hub_id_or_name)
         path = f"/metavault/api/projects/{project_id}/model/hubs/{hub_id}"
@@ -152,7 +154,9 @@ class ModelClient(BaseClient):
         resp.raise_for_status()
 
     @BaseClient._retry_decorator()
-    def update_link(self, project_id: str, link_id_or_name: str, link_request: CreateLinkRequest) -> Link:
+    def update_link(
+        self, project_id: str, link_id_or_name: str, link_request: CreateLinkRequest
+    ) -> Link:
         """Update a link in a project. Returns the updated link entity."""
         link_id = self._resolve_link_id(project_id, link_id_or_name)
         path = f"/metavault/api/projects/{project_id}/model/links/{link_id}"
@@ -181,19 +185,21 @@ class ModelClient(BaseClient):
     ) -> Satellite:
         """
         Get satellite by ID in a project. Returns the satellite entity with columns and parent.
-        
+
         Args:
             project_id: Project ID
             parent_type: Type of parent - "hub" or "link"
             parent_id: ID of the parent hub or link
             satellite_id: ID of the satellite
-        
+
         Returns:
             The satellite entity with embedded columns and parent
         """
         if parent_type not in ("hub", "link"):
-            raise ValueError(f"Invalid parent_type '{parent_type}'. Must be 'hub' or 'link'")
-        
+            raise ValueError(
+                f"Invalid parent_type '{parent_type}'. Must be 'hub' or 'link'"
+            )
+
         path = f"/metavault/api/projects/{project_id}/model/{parent_type}s/{parent_id}/satellites/{satellite_id}"
         query = {"expand": "parent"}
         logger.debug("GET %s params=%s", path, query)

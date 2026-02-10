@@ -1,4 +1,5 @@
 """Hub entity model."""
+
 from typing import Literal, Optional
 
 from pydantic import BaseModel
@@ -22,4 +23,3 @@ class Hub(BaseModelEntity):
     satelliteCount: Optional[int] = None
     dependentLinkCount: Optional[int] = None
     businessKey: Optional[BusinessKey] = None
-

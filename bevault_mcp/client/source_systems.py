@@ -1,4 +1,5 @@
 """Source systems client."""
+
 import logging
 from typing import Any, Dict, Optional
 
@@ -15,7 +16,6 @@ from ..models.api.entities.staging_table import StagingTableColumn
 from ..models.requests.staging_table import UpdateStagingTableColumnRequest
 from ..models.api.responses.staging_tables import StagingTablesResponse
 from ..models.api.responses.staging_table_mappings import StagingTableMappingsResponse
-from ..models.api.entities.mapping import HubMapping, LinkMapping, SatelliteMapping
 from .base import BaseClient
 from .utils import is_guid
 
@@ -26,10 +26,14 @@ class SourceSystemsClient(BaseClient):
     """Client for source systems operations."""
 
     @BaseClient._retry_decorator()
-    def create(self, project_id: str, source_system_request: CreateSourceSystemRequest) -> SourceSystem:
+    def create(
+        self, project_id: str, source_system_request: CreateSourceSystemRequest
+    ) -> SourceSystem:
         """Create a source system in a project. Returns the created source system entity."""
         path = f"/metavault/api/projects/{project_id}/metavault/sourcesystems"
-        logger.debug("POST %s body=%s", path, source_system_request.model_dump(mode="json"))
+        logger.debug(
+            "POST %s body=%s", path, source_system_request.model_dump(mode="json")
+        )
         resp = self._client.post(
             path,
             json=source_system_request.model_dump(mode="json", exclude_none=True),
@@ -40,7 +44,9 @@ class SourceSystemsClient(BaseClient):
         return SourceSystem.model_validate(data)
 
     @BaseClient._retry_decorator()
-    def get_source_system_by_name(self, project_id: str, source_system_name: str) -> SourceSystem:
+    def get_source_system_by_name(
+        self, project_id: str, source_system_name: str
+    ) -> SourceSystem:
         """Get source system by name in a project. Returns the source system entity."""
         path = f"/metavault/api/projects/{project_id}/metavault/sourcesystems/{source_system_name}"
         logger.debug("GET %s", path)
@@ -62,11 +68,15 @@ class SourceSystemsClient(BaseClient):
         data = resp.json()
         return DataPackage.model_validate(data)
 
-    def _resolve_source_system_id(self, project_id: str, source_system_id_or_name: str) -> str:
+    def _resolve_source_system_id(
+        self, project_id: str, source_system_id_or_name: str
+    ) -> str:
         """Resolve source system ID from either ID or name."""
         if is_guid(source_system_id_or_name):
             return source_system_id_or_name
-        source_system = self.get_source_system_by_name(project_id, source_system_id_or_name)
+        source_system = self.get_source_system_by_name(
+            project_id, source_system_id_or_name
+        )
         return source_system.id
 
     def _resolve_data_package_id(
@@ -75,22 +85,29 @@ class SourceSystemsClient(BaseClient):
         """Resolve data package ID from either ID or name."""
         if is_guid(data_package_id_or_name):
             return data_package_id_or_name
-        data_package = self.get_data_package_by_name(project_id, source_system_id, data_package_id_or_name)
+        data_package = self.get_data_package_by_name(
+            project_id, source_system_id, data_package_id_or_name
+        )
         return data_package.id
 
     @BaseClient._retry_decorator()
     def create_data_package(
-        self, project_id: str, source_system_id_or_name: str, data_package_request: CreateDataPackageRequest
+        self,
+        project_id: str,
+        source_system_id_or_name: str,
+        data_package_request: CreateDataPackageRequest,
     ) -> DataPackage:
         """Create a data package in a source system. Returns the created data package entity.
-        
+
         Args:
             project_id: Project ID
             source_system_id_or_name: Source system ID or name (API accepts both)
             data_package_request: Data package creation request
         """
         path = f"/metavault/api/projects/{project_id}/metavault/sourcesystems/{source_system_id_or_name}/datapackages"
-        logger.debug("POST %s body=%s", path, data_package_request.model_dump(mode="json"))
+        logger.debug(
+            "POST %s body=%s", path, data_package_request.model_dump(mode="json")
+        )
         resp = self._client.post(
             path,
             json=data_package_request.model_dump(mode="json", exclude_none=True),
@@ -102,7 +119,11 @@ class SourceSystemsClient(BaseClient):
 
     @BaseClient._retry_decorator()
     def search(
-        self, project_id: str, index: int = 0, limit: int = 10, filter: Optional[str] = None
+        self,
+        project_id: str,
+        index: int = 0,
+        limit: int = 10,
+        filter: Optional[str] = None,
     ) -> SourceSystemsResponse:
         """Search source systems in a project."""
         query: Dict[str, Any] = {"index": index, "limit": limit}
@@ -116,7 +137,9 @@ class SourceSystemsClient(BaseClient):
         return SourceSystemsResponse.model_validate(data)
 
     @BaseClient._retry_decorator()
-    def get_source_system_by_id(self, project_id: str, source_system_id: str) -> SourceSystem:
+    def get_source_system_by_id(
+        self, project_id: str, source_system_id: str
+    ) -> SourceSystem:
         """Get source system by ID in a project. Returns the source system entity."""
         path = f"/metavault/api/projects/{project_id}/metavault/sourcesystems/{source_system_id}"
         logger.debug("GET %s", path)
@@ -127,12 +150,19 @@ class SourceSystemsClient(BaseClient):
 
     @BaseClient._retry_decorator()
     def update(
-        self, project_id: str, source_system_id_or_name: str, source_system_request: CreateSourceSystemRequest
+        self,
+        project_id: str,
+        source_system_id_or_name: str,
+        source_system_request: CreateSourceSystemRequest,
     ) -> SourceSystem:
         """Update a source system in a project. Returns the updated source system entity."""
-        source_system_id = self._resolve_source_system_id(project_id, source_system_id_or_name)
+        source_system_id = self._resolve_source_system_id(
+            project_id, source_system_id_or_name
+        )
         path = f"/metavault/api/projects/{project_id}/metavault/sourcesystems/{source_system_id}"
-        logger.debug("PUT %s body=%s", path, source_system_request.model_dump(mode="json"))
+        logger.debug(
+            "PUT %s body=%s", path, source_system_request.model_dump(mode="json")
+        )
         resp = self._client.put(
             path,
             json=source_system_request.model_dump(mode="json", exclude_none=True),
@@ -145,7 +175,9 @@ class SourceSystemsClient(BaseClient):
     @BaseClient._retry_decorator()
     def delete(self, project_id: str, source_system_id_or_name: str) -> None:
         """Delete a source system from a project."""
-        source_system_id = self._resolve_source_system_id(project_id, source_system_id_or_name)
+        source_system_id = self._resolve_source_system_id(
+            project_id, source_system_id_or_name
+        )
         path = f"/metavault/api/projects/{project_id}/metavault/sourcesystems/{source_system_id}"
         logger.debug("DELETE %s", path)
         resp = self._client.delete(path, headers=self._get_auth_headers())
@@ -156,7 +188,9 @@ class SourceSystemsClient(BaseClient):
         self, project_id: str, source_system_id_or_name: str, data_package_id: str
     ) -> DataPackage:
         """Get data package by ID in a source system. Returns the data package entity."""
-        source_system_id = self._resolve_source_system_id(project_id, source_system_id_or_name)
+        source_system_id = self._resolve_source_system_id(
+            project_id, source_system_id_or_name
+        )
         path = f"/metavault/api/projects/{project_id}/metavault/sourcesystems/{source_system_id}/datapackages/{data_package_id}"
         logger.debug("GET %s", path)
         resp = self._client.get(path, headers=self._get_auth_headers())
@@ -173,10 +207,16 @@ class SourceSystemsClient(BaseClient):
         data_package_request: CreateDataPackageRequest,
     ) -> DataPackage:
         """Update a data package in a source system. Returns the updated data package entity."""
-        source_system_id = self._resolve_source_system_id(project_id, source_system_id_or_name)
-        data_package_id = self._resolve_data_package_id(project_id, source_system_id, data_package_id_or_name)
+        source_system_id = self._resolve_source_system_id(
+            project_id, source_system_id_or_name
+        )
+        data_package_id = self._resolve_data_package_id(
+            project_id, source_system_id, data_package_id_or_name
+        )
         path = f"/metavault/api/projects/{project_id}/metavault/sourcesystems/{source_system_id}/datapackages/{data_package_id}"
-        logger.debug("PUT %s body=%s", path, data_package_request.model_dump(mode="json"))
+        logger.debug(
+            "PUT %s body=%s", path, data_package_request.model_dump(mode="json")
+        )
         resp = self._client.put(
             path,
             json=data_package_request.model_dump(mode="json", exclude_none=True),
@@ -187,10 +227,19 @@ class SourceSystemsClient(BaseClient):
         return DataPackage.model_validate(data)
 
     @BaseClient._retry_decorator()
-    def delete_data_package(self, project_id: str, source_system_id_or_name: str, data_package_id_or_name: str) -> None:
+    def delete_data_package(
+        self,
+        project_id: str,
+        source_system_id_or_name: str,
+        data_package_id_or_name: str,
+    ) -> None:
         """Delete a data package from a source system."""
-        source_system_id = self._resolve_source_system_id(project_id, source_system_id_or_name)
-        data_package_id = self._resolve_data_package_id(project_id, source_system_id, data_package_id_or_name)
+        source_system_id = self._resolve_source_system_id(
+            project_id, source_system_id_or_name
+        )
+        data_package_id = self._resolve_data_package_id(
+            project_id, source_system_id, data_package_id_or_name
+        )
         path = f"/metavault/api/projects/{project_id}/metavault/sourcesystems/{source_system_id}/datapackages/{data_package_id}"
         logger.debug("DELETE %s", path)
         resp = self._client.delete(path, headers=self._get_auth_headers())
@@ -206,7 +255,7 @@ class SourceSystemsClient(BaseClient):
     ) -> StagingTable:
         """
         Create a staging table in a data package. Returns the created staging table entity.
-        
+
         Args:
             project_id: Project ID
             source_system_id_or_name: Source system ID or name (API accepts both)
@@ -214,7 +263,9 @@ class SourceSystemsClient(BaseClient):
             staging_table_request: Staging table creation request
         """
         path = f"/metavault/api/projects/{project_id}/metavault/sourcesystems/{source_system_id_or_name}/datapackages/{data_package_id_or_name}/tables"
-        logger.debug("POST %s body=%s", path, staging_table_request.model_dump(mode="json"))
+        logger.debug(
+            "POST %s body=%s", path, staging_table_request.model_dump(mode="json")
+        )
         resp = self._client.post(
             path,
             json=staging_table_request.model_dump(mode="json", exclude_none=True),
@@ -235,7 +286,7 @@ class SourceSystemsClient(BaseClient):
     ) -> StagingTablesResponse:
         """
         Get staging tables for a data package. Returns paginated list of staging tables.
-        
+
         Args:
             project_id: Project ID
             source_system_id_or_name: Source system ID or name (API accepts both)
@@ -262,7 +313,7 @@ class SourceSystemsClient(BaseClient):
     ) -> StagingTableColumn:
         """
         Add a column to a staging table. Returns the created column entity.
-        
+
         Args:
             project_id: Project ID
             source_system_id_or_name: Source system ID or name (API accepts both)
@@ -271,7 +322,11 @@ class SourceSystemsClient(BaseClient):
             column_request: Column creation request (without id field)
         """
         path = f"/metavault/api/projects/{project_id}/metavault/sourcesystems/{source_system_id_or_name}/datapackages/{data_package_id_or_name}/tables/{table_id_or_name}/columns"
-        logger.debug("POST %s body=%s", path, column_request.model_dump(mode="json", exclude_none=True))
+        logger.debug(
+            "POST %s body=%s",
+            path,
+            column_request.model_dump(mode="json", exclude_none=True),
+        )
         resp = self._client.post(
             path,
             json=column_request.model_dump(mode="json", exclude_none=True),
@@ -292,7 +347,7 @@ class SourceSystemsClient(BaseClient):
     ) -> StagingTableColumn:
         """
         Update a staging table column. Returns the updated column entity.
-        
+
         Args:
             project_id: Project ID
             source_system_id_or_name: Source system ID or name (API accepts both)
@@ -301,7 +356,11 @@ class SourceSystemsClient(BaseClient):
             column_request: Column update request (should include id field)
         """
         path = f"/metavault/api/projects/{project_id}/metavault/sourcesystems/{source_system_id_or_name}/datapackages/{data_package_id_or_name}/tables/columns/{column_id}"
-        logger.debug("PUT %s body=%s", path, column_request.model_dump(mode="json", exclude_none=True))
+        logger.debug(
+            "PUT %s body=%s",
+            path,
+            column_request.model_dump(mode="json", exclude_none=True),
+        )
         resp = self._client.put(
             path,
             json=column_request.model_dump(mode="json", exclude_none=True),
@@ -321,7 +380,7 @@ class SourceSystemsClient(BaseClient):
     ) -> None:
         """
         Delete a staging table column.
-        
+
         Args:
             project_id: Project ID
             source_system_id_or_name: Source system ID or name (API accepts both)
@@ -343,7 +402,7 @@ class SourceSystemsClient(BaseClient):
     ) -> StagingTable:
         """
         Get a staging table by ID or name. Returns the staging table entity.
-        
+
         Args:
             project_id: Project ID
             source_system_id_or_name: Source system ID or name (API accepts both)
@@ -369,7 +428,7 @@ class SourceSystemsClient(BaseClient):
     ) -> StagingTableMappingsResponse:
         """
         Get mappings for a staging table. Returns paginated list of mappings.
-        
+
         Args:
             project_id: Project ID
             source_system_id_or_name: Source system ID or name (API accepts both)
@@ -385,4 +444,3 @@ class SourceSystemsClient(BaseClient):
         resp.raise_for_status()
         data = resp.json()
         return StagingTableMappingsResponse.model_validate(data)
-

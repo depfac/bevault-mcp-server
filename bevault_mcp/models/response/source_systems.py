@@ -1,4 +1,5 @@
 """Optimized source systems response models for MCP server (token-efficient)."""
+
 from typing import List, Optional
 
 from pydantic import BaseModel
@@ -24,7 +25,9 @@ class OptimizedDataPackage(BaseModel):
     refreshType: Optional[str] = None
     formatInfo: Optional[str] = None
     expectedQuality: Optional[str] = None
-    stagingTables: List[StagingTableInfo] = []  # List of staging tables with id and name
+    stagingTables: List[
+        StagingTableInfo
+    ] = []  # List of staging tables with id and name
 
 
 class OptimizedSourceSystem(BaseModel):
@@ -47,4 +50,3 @@ class OptimizedSourceSystemsResponse(BaseModel):
 
     paging: PagingInfo
     sourceSystems: list[OptimizedSourceSystem]
-

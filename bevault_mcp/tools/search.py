@@ -57,7 +57,7 @@ def _transform_entity(
         if entity.parentId and entity.parentType:
             # Check if parent is already in the search results
             parent_entity = entity_lookup.get(entity.parentId)
-            
+
             if parent_entity:
                 # Parent found in search results - use it directly
                 parent_name = parent_entity.name
@@ -71,10 +71,14 @@ def _transform_entity(
                 # Parent not in search results - fetch from API
                 try:
                     if entity.parentType == "Hub":
-                        parent_entity = client.model.get_hub_by_id(project_id, entity.parentId)
+                        parent_entity = client.model.get_hub_by_id(
+                            project_id, entity.parentId
+                        )
                         parent_name = parent_entity.name
                     elif entity.parentType == "Link":
-                        parent_entity = client.model.get_link_by_id(project_id, entity.parentId)
+                        parent_entity = client.model.get_link_by_id(
+                            project_id, entity.parentId
+                        )
                         parent_name = parent_entity.name
                     logger.debug(
                         "Fetched parent %s '%s' for satellite '%s' from API",
@@ -111,8 +115,8 @@ def _transform_entity(
 def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
     @mcp.tool()
     def search_model(
+        projectName: str,
         searchString: str | None = None,
-        projectName: str | None = None,
         index: int = 0,
         limit: int = 10,
         includeHubs: bool = True,
@@ -135,13 +139,19 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
                 includeSatellites=includeSatellites,
                 includeReferenceTables=includeReferenceTables,
             )
-            logger.info("search_model: searchString=%s, projectName=%s", params.searchString, params.projectName)
+            logger.info(
+                "search_model: searchString=%s, projectName=%s",
+                params.searchString,
+                params.projectName,
+            )
 
             # Get project ID from project name if provided
-            project_id = None
-            if params.projectName:
-                project_id = client.projects.get_by_name(params.projectName)
-                logger.debug("Found project ID: %s for project: %s", project_id, params.projectName)
+            project_id = client.projects.get_by_name(params.projectName)
+            logger.debug(
+                "Found project ID: %s for project: %s",
+                project_id,
+                params.projectName,
+            )
 
             # Get search results (client will use configured project_id if None)
             result: SearchResponse = client.model.search(params, project_id=project_id)
@@ -151,7 +161,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
             for entity in result.entities:
                 if isinstance(entity, (Hub, Link)):
                     entity_lookup[entity.id] = entity
-            
+
             logger.debug(
                 "Built entity lookup with %d hubs/links for parent resolution",
                 len(entity_lookup),
@@ -177,8 +187,6 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
             )
 
             return optimized_response.model_dump(mode="json")
-        except Exception as exc:  # noqa: BLE001
+        except Exception:  # noqa: BLE001
             logger.exception("search_model failed")
             raise
-
-

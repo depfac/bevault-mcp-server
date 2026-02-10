@@ -29,22 +29,28 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         """
         Search information marts in a beVault project.
         Returns optimized paginated response with paging info and information marts (with simplified script info).
-        
+
         Args:
             projectName: Name of the project (will be resolved to project ID)
             searchName: Optional search string - if provided, filters information marts where name contains this value
             index: Pagination index (default: 0)
             limit: Maximum number of results (default: 10)
-        
+
         Returns:
             Optimized information marts search response with paging and information marts (with simplified scripts).
         """
         try:
-            logger.info("search_information_marts: projectName=%s, searchName=%s", projectName, searchName)
+            logger.info(
+                "search_information_marts: projectName=%s, searchName=%s",
+                projectName,
+                searchName,
+            )
 
             # Get project ID from project name
             project_id = client.projects.get_by_name(projectName)
-            logger.debug("Found project ID: %s for project: %s", project_id, projectName)
+            logger.debug(
+                "Found project ID: %s for project: %s", project_id, projectName
+            )
 
             # Build filter string if searchName is provided
             filter_str = None
@@ -52,7 +58,9 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
                 filter_str = f"name contains {searchName}"
 
             # Search information marts
-            result = client.information_marts.search(project_id, index=index, limit=limit, filter=filter_str)
+            result = client.information_marts.search(
+                project_id, index=index, limit=limit, filter=filter_str
+            )
 
             # Transform to optimized format
             optimized_information_marts = []
@@ -93,7 +101,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
             )
 
             return optimized_response.model_dump(mode="json")
-        except Exception as exc:  # noqa: BLE001
+        except Exception:  # noqa: BLE001
             logger.exception("search_information_marts failed")
             raise
 
@@ -106,12 +114,12 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         """
         Get a full information mart script by ID or name.
         Returns the complete script metadata including columns and their source columns.
-        
+
         Args:
             projectName: Name of the project (will be resolved to project ID)
             informationMartIdOrName: Information mart ID or name (will be resolved to ID)
             scriptIdOrName: Script ID or name (will be resolved to ID)
-        
+
         Returns:
             Full information mart script entity with all metadata, columns, and sourceColumns.
         """
@@ -125,14 +133,18 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
 
             # Get project ID from project name
             project_id = client.projects.get_by_name(projectName)
-            logger.debug("Found project ID: %s for project: %s", project_id, projectName)
+            logger.debug(
+                "Found project ID: %s for project: %s", project_id, projectName
+            )
 
             # Resolve information mart ID
             information_mart_id = client.information_marts._resolve_information_mart_id(
                 project_id, informationMartIdOrName
             )
             logger.debug(
-                "Resolved information mart ID: %s for: %s", information_mart_id, informationMartIdOrName
+                "Resolved information mart ID: %s for: %s",
+                information_mart_id,
+                informationMartIdOrName,
             )
 
             # Resolve script ID
@@ -142,11 +154,13 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
             logger.debug("Resolved script ID: %s for: %s", script_id, scriptIdOrName)
 
             # Get full script with all metadata
-            script = client.information_marts.get_script(project_id, information_mart_id, script_id)
+            script = client.information_marts.get_script(
+                project_id, information_mart_id, script_id
+            )
 
             # Return the full script as a dictionary
             return script.model_dump(mode="json", exclude_none=True)
-        except Exception as exc:  # noqa: BLE001
+        except Exception:  # noqa: BLE001
             logger.exception("get_information_mart_script failed")
             raise
 
@@ -162,7 +176,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
     ) -> dict:
         """
         Create an information mart in a beVault project.
-        
+
         Args:
             projectName: Name of the project (will be resolved to project ID)
             name: Name of the information mart (required)
@@ -171,7 +185,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
             snapshotIdOrName: Snapshot ID or name (optional, will be resolved if provided)
             businessDescription: Business description of the information mart (optional)
             technicalDescription: Technical description of the information mart (optional)
-        
+
         Returns:
             The created information mart entity as a dictionary.
         """
@@ -186,13 +200,19 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
 
             # Get project ID from project name
             project_id = client.projects.get_by_name(projectName)
-            logger.debug("Found project ID: %s for project: %s", project_id, projectName)
+            logger.debug(
+                "Found project ID: %s for project: %s", project_id, projectName
+            )
 
             # Resolve snapshot ID if provided
             snapshot_id = None
             if snapshotIdOrName:
-                snapshot_id = client.information_marts._resolve_snapshot_id(project_id, snapshotIdOrName)
-                logger.debug("Resolved snapshot ID: %s for: %s", snapshot_id, snapshotIdOrName)
+                snapshot_id = client.information_marts._resolve_snapshot_id(
+                    project_id, snapshotIdOrName
+                )
+                logger.debug(
+                    "Resolved snapshot ID: %s for: %s", snapshot_id, snapshotIdOrName
+                )
 
             # Build the information mart request
             information_mart_request = CreateInformationMartRequest(
@@ -205,11 +225,13 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
             )
 
             # Create the information mart
-            created_im = client.information_marts.create(project_id, information_mart_request)
+            created_im = client.information_marts.create(
+                project_id, information_mart_request
+            )
 
             # Return the created information mart as a dictionary
             return created_im.model_dump(mode="json", exclude_none=True)
-        except Exception as exc:  # noqa: BLE001
+        except Exception:  # noqa: BLE001
             logger.exception("create_information_mart failed")
             raise
 
@@ -226,7 +248,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
     ) -> dict:
         """
         Create an information mart script in a beVault project.
-        
+
         Args:
             projectName: Name of the project (will be resolved to project ID)
             informationMartIdOrName: ID (GUID) or name of the information mart
@@ -236,7 +258,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
             tableName: Table name for the script (optional)
             businessDescription: Business description of the script (optional)
             technicalDescription: Technical description of the script (optional)
-        
+
         Returns:
             The created information mart script entity as a dictionary.
         """
@@ -251,20 +273,26 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
 
             # Get project ID from project name
             project_id = client.projects.get_by_name(projectName)
-            logger.debug("Found project ID: %s for project: %s", project_id, projectName)
+            logger.debug(
+                "Found project ID: %s for project: %s", project_id, projectName
+            )
 
             # Resolve information mart ID
             information_mart_id = client.information_marts._resolve_information_mart_id(
                 project_id, informationMartIdOrName
             )
             logger.debug(
-                "Resolved information mart ID: %s for: %s", information_mart_id, informationMartIdOrName
+                "Resolved information mart ID: %s for: %s",
+                information_mart_id,
+                informationMartIdOrName,
             )
 
             # Calculate order if not provided
             script_order = order
             if script_order is None:
-                script_order = client.information_marts._calculate_next_order(project_id, information_mart_id)
+                script_order = client.information_marts._calculate_next_order(
+                    project_id, information_mart_id
+                )
                 logger.debug("Calculated order: %s for script '%s'", script_order, name)
 
             # Build the script request
@@ -284,7 +312,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
 
             # Return the created script as a dictionary
             return created_script.model_dump(mode="json", exclude_none=True)
-        except Exception as exc:  # noqa: BLE001
+        except Exception:  # noqa: BLE001
             logger.exception("create_information_mart_script failed")
             raise
 
@@ -304,7 +332,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
     ) -> dict:
         """
         Update an information mart script's metadata (excluding code) in a beVault project.
-        
+
         Args:
             projectName: Name of the project (will be resolved to project ID)
             informationMartIdOrName: ID (GUID) or name of the information mart
@@ -326,7 +354,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
                     - entityName (required): Table name of the entity. It corresponds to the table used in the script's code
                     - columnName (required): Name of the column used in the script's code
                     - id (optional, if updating existing source column)
-        
+
         Returns:
             The updated information mart script entity as a dictionary.
         """
@@ -341,14 +369,18 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
 
             # Get project ID from project name
             project_id = client.projects.get_by_name(projectName)
-            logger.debug("Found project ID: %s for project: %s", project_id, projectName)
+            logger.debug(
+                "Found project ID: %s for project: %s", project_id, projectName
+            )
 
             # Resolve information mart ID
             information_mart_id = client.information_marts._resolve_information_mart_id(
                 project_id, informationMartIdOrName
             )
             logger.debug(
-                "Resolved information mart ID: %s for: %s", information_mart_id, informationMartIdOrName
+                "Resolved information mart ID: %s for: %s",
+                information_mart_id,
+                informationMartIdOrName,
             )
 
             # Resolve script ID
@@ -358,7 +390,9 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
             logger.debug("Resolved script ID: %s for: %s", script_id, scriptIdOrName)
 
             # Fetch existing script to get current values for fields not provided
-            existing_script = client.information_marts.get_script(project_id, information_mart_id, script_id)
+            existing_script = client.information_marts.get_script(
+                project_id, information_mart_id, script_id
+            )
 
             # Build column request models
             column_requests = []
@@ -379,7 +413,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
                                     informationMartScriptColumnId=col_dict.get("id"),
                                 )
                             )
-                    
+
                     column_requests.append(
                         UpdateInformationMartScriptColumnRequest(
                             id=col_dict.get("id"),
@@ -407,7 +441,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
                                 informationMartScriptColumnId=col.id,
                             )
                         )
-                    
+
                     column_requests.append(
                         UpdateInformationMartScriptColumnRequest(
                             id=col.id,
@@ -427,10 +461,16 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
                 informationMartId=information_mart_id,
                 order=order if order is not None else existing_script.order,
                 timeout=timeout if timeout is not None else existing_script.timeout,
-                tableName=tableName if tableName is not None else existing_script.tableName,
+                tableName=tableName
+                if tableName is not None
+                else existing_script.tableName,
                 typeTag=typeTag if typeTag is not None else existing_script.typeTag,
-                businessDescription=businessDescription if businessDescription is not None else existing_script.businessDescription,
-                technicalDescription=technicalDescription if technicalDescription is not None else existing_script.technicalDescription,
+                businessDescription=businessDescription
+                if businessDescription is not None
+                else existing_script.businessDescription,
+                technicalDescription=technicalDescription
+                if technicalDescription is not None
+                else existing_script.technicalDescription,
                 code=existing_script.code,  # Preserve existing code when updating metadata
                 columns=column_requests,
             )
@@ -442,7 +482,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
 
             # Return the updated script as a dictionary
             return updated_script.model_dump(mode="json", exclude_none=True)
-        except Exception as exc:  # noqa: BLE001
+        except Exception:  # noqa: BLE001
             logger.exception("update_information_mart_script failed")
             raise
 
@@ -456,13 +496,13 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         """
         Update an information mart script's code only in a beVault project.
         This tool fetches the existing script metadata first, then updates only the code field.
-        
+
         Args:
             projectName: Name of the project (will be resolved to project ID)
             informationMartIdOrName: ID (GUID) or name of the information mart
             scriptIdOrName: ID (GUID) or name of the script to update
             code: The SQL code to set for the script (required)
-        
+
         Returns:
             The updated information mart script entity as a dictionary.
         """
@@ -476,14 +516,18 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
 
             # Get project ID from project name
             project_id = client.projects.get_by_name(projectName)
-            logger.debug("Found project ID: %s for project: %s", project_id, projectName)
+            logger.debug(
+                "Found project ID: %s for project: %s", project_id, projectName
+            )
 
             # Resolve information mart ID
             information_mart_id = client.information_marts._resolve_information_mart_id(
                 project_id, informationMartIdOrName
             )
             logger.debug(
-                "Resolved information mart ID: %s for: %s", information_mart_id, informationMartIdOrName
+                "Resolved information mart ID: %s for: %s",
+                information_mart_id,
+                informationMartIdOrName,
             )
 
             # Resolve script ID
@@ -499,7 +543,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
 
             # Return the updated script as a dictionary
             return updated_script.model_dump(mode="json", exclude_none=True)
-        except Exception as exc:  # noqa: BLE001
+        except Exception:  # noqa: BLE001
             logger.exception("update_information_mart_script_code failed")
             raise
 
@@ -516,7 +560,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
     ) -> dict:
         """
         Update an information mart in a beVault project.
-        
+
         Args:
             projectName: Name of the project (will be resolved to project ID)
             informationMartIdOrName: ID (GUID) or name of the information mart to update
@@ -526,7 +570,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
             snapshotIdOrName: Snapshot ID or name (optional, will be resolved if provided)
             businessDescription: Business description of the information mart (optional)
             technicalDescription: Technical description of the information mart (optional)
-        
+
         Returns:
             The updated information mart entity as a dictionary.
         """
@@ -542,13 +586,19 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
 
             # Get project ID from project name
             project_id = client.projects.get_by_name(projectName)
-            logger.debug("Found project ID: %s for project: %s", project_id, projectName)
+            logger.debug(
+                "Found project ID: %s for project: %s", project_id, projectName
+            )
 
             # Resolve snapshot ID if provided
             snapshot_id = None
             if snapshotIdOrName:
-                snapshot_id = client.information_marts._resolve_snapshot_id(project_id, snapshotIdOrName)
-                logger.debug("Resolved snapshot ID: %s for: %s", snapshot_id, snapshotIdOrName)
+                snapshot_id = client.information_marts._resolve_snapshot_id(
+                    project_id, snapshotIdOrName
+                )
+                logger.debug(
+                    "Resolved snapshot ID: %s for: %s", snapshot_id, snapshotIdOrName
+                )
 
             # Build the information mart request
             information_mart_request = CreateInformationMartRequest(
@@ -561,11 +611,13 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
             )
 
             # Update the information mart
-            updated_im = client.information_marts.update(project_id, informationMartIdOrName, information_mart_request)
+            updated_im = client.information_marts.update(
+                project_id, informationMartIdOrName, information_mart_request
+            )
 
             # Return the updated information mart as a dictionary
             return updated_im.model_dump(mode="json", exclude_none=True)
-        except Exception as exc:  # noqa: BLE001
+        except Exception:  # noqa: BLE001
             logger.exception("update_information_mart failed")
             raise
 
@@ -577,28 +629,37 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
     ) -> dict:
         """
         Get snapshots for a beVault project.
-        
+
         Args:
             projectName: Name of the project (will be resolved to project ID)
             index: Pagination index (default: 0)
             limit: Maximum number of results (default: 1000000 to get all snapshots)
-        
+
         Returns:
             Paginated snapshots response with paging info and snapshots list.
         """
         try:
-            logger.info("get_snapshots: projectName=%s, index=%s, limit=%s", projectName, index, limit)
+            logger.info(
+                "get_snapshots: projectName=%s, index=%s, limit=%s",
+                projectName,
+                index,
+                limit,
+            )
 
             # Get project ID from project name
             project_id = client.projects.get_by_name(projectName)
-            logger.debug("Found project ID: %s for project: %s", project_id, projectName)
+            logger.debug(
+                "Found project ID: %s for project: %s", project_id, projectName
+            )
 
             # Get snapshots
-            result = client.information_marts.get_snapshots(project_id, index=index, limit=limit)
+            result = client.information_marts.get_snapshots(
+                project_id, index=index, limit=limit
+            )
 
             # Return the snapshots response as a dictionary
             return result.model_dump(mode="json", exclude_none=True)
-        except Exception as exc:  # noqa: BLE001
+        except Exception:  # noqa: BLE001
             logger.exception("get_snapshots failed")
             raise
 
@@ -609,27 +670,35 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
     ) -> dict:
         """
         Delete an information mart from a beVault project.
-        
+
         Args:
             projectName: Name of the project (will be resolved to project ID)
             informationMartIdOrName: ID (GUID) or name of the information mart to delete
-        
+
         Returns:
             A confirmation message as a dictionary.
         """
         try:
-            logger.info("delete_information_mart: projectName=%s, informationMartIdOrName=%s", projectName, informationMartIdOrName)
+            logger.info(
+                "delete_information_mart: projectName=%s, informationMartIdOrName=%s",
+                projectName,
+                informationMartIdOrName,
+            )
 
             # Get project ID from project name
             project_id = client.projects.get_by_name(projectName)
-            logger.debug("Found project ID: %s for project: %s", project_id, projectName)
+            logger.debug(
+                "Found project ID: %s for project: %s", project_id, projectName
+            )
 
             # Delete the information mart
             client.information_marts.delete(project_id, informationMartIdOrName)
-            
+
             # Return confirmation
-            return {"message": f"Information mart '{informationMartIdOrName}' deleted successfully"}
-        except Exception as exc:  # noqa: BLE001
+            return {
+                "message": f"Information mart '{informationMartIdOrName}' deleted successfully"
+            }
+        except Exception:  # noqa: BLE001
             logger.exception("delete_information_mart failed")
             raise
 
@@ -641,12 +710,12 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
     ) -> dict:
         """
         Delete an information mart script from a beVault project.
-        
+
         Args:
             projectName: Name of the project (will be resolved to project ID)
             informationMartIdOrName: ID (GUID) or name of the information mart
             scriptIdOrName: ID (GUID) or name of the script to delete
-        
+
         Returns:
             A confirmation message as a dictionary.
         """
@@ -660,14 +729,18 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
 
             # Get project ID from project name
             project_id = client.projects.get_by_name(projectName)
-            logger.debug("Found project ID: %s for project: %s", project_id, projectName)
+            logger.debug(
+                "Found project ID: %s for project: %s", project_id, projectName
+            )
 
             # Resolve information mart ID
             information_mart_id = client.information_marts._resolve_information_mart_id(
                 project_id, informationMartIdOrName
             )
             logger.debug(
-                "Resolved information mart ID: %s for: %s", information_mart_id, informationMartIdOrName
+                "Resolved information mart ID: %s for: %s",
+                information_mart_id,
+                informationMartIdOrName,
             )
 
             # Resolve script ID
@@ -677,10 +750,14 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
             logger.debug("Resolved script ID: %s for: %s", script_id, scriptIdOrName)
 
             # Delete the script
-            client.information_marts.delete_script(project_id, information_mart_id, script_id)
-            
+            client.information_marts.delete_script(
+                project_id, information_mart_id, script_id
+            )
+
             # Return confirmation
-            return {"message": f"Information mart script '{scriptIdOrName}' deleted successfully from information mart '{informationMartIdOrName}'"}
-        except Exception as exc:  # noqa: BLE001
+            return {
+                "message": f"Information mart script '{scriptIdOrName}' deleted successfully from information mart '{informationMartIdOrName}'"
+            }
+        except Exception:  # noqa: BLE001
             logger.exception("delete_information_mart_script failed")
             raise

@@ -1,4 +1,5 @@
 """Optimized search response models for MCP server (token-efficient)."""
+
 from typing import Literal, Optional, Union
 
 from pydantic import BaseModel
@@ -58,7 +59,9 @@ class OptimizedReferenceTable(BaseModel):
     mappingCount: Optional[int] = None
 
 
-OptimizedEntity = Union[OptimizedHub, OptimizedLink, OptimizedSatellite, OptimizedReferenceTable]
+OptimizedEntity = Union[
+    OptimizedHub, OptimizedLink, OptimizedSatellite, OptimizedReferenceTable
+]
 
 
 class PagingInfo(BaseModel):
@@ -74,4 +77,3 @@ class OptimizedSearchResponse(BaseModel):
 
     paging: PagingInfo
     entities: list[OptimizedEntity]
-

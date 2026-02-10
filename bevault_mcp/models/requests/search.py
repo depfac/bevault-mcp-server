@@ -1,4 +1,5 @@
 """Search request parameters."""
+
 from typing import Optional
 
 from pydantic import BaseModel
@@ -15,4 +16,3 @@ class SearchParams(BaseModel):
     includeLinks: bool = True
     includeSatellites: bool = True
     includeReferenceTables: bool = True
-

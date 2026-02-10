@@ -1,4 +1,5 @@
 """Staging table mappings response models."""
+
 from typing import Any, List
 
 from pydantic import BaseModel, Field, model_validator

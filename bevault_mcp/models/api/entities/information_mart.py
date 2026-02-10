@@ -1,4 +1,5 @@
 """Information mart entity model."""
+
 from typing import Any, List, Literal, Optional
 
 from pydantic import Field, model_validator
@@ -61,7 +62,10 @@ class InformationMartScript(BeVaultEntity):
             embedded = result["_embedded"]
             if "columns" in embedded:
                 columns_embedded = embedded["columns"]
-                if isinstance(columns_embedded, dict) and "_embedded" in columns_embedded:
+                if (
+                    isinstance(columns_embedded, dict)
+                    and "_embedded" in columns_embedded
+                ):
                     columns_list = columns_embedded["_embedded"].get("columns", [])
                     if isinstance(columns_list, list):
                         columns = columns_list
