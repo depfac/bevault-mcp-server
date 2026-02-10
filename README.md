@@ -139,13 +139,13 @@ ApiToken sk_abc123xyz789
 
 
 ## Development
-- Code style: black + isort
-- Python >= 3.9
+- Code style and linting: ruff (see `CONTRIBUTING.md` for details)
+- Python >= 3.13
 - Uses FastMCP for HTTP/Streamable transport support
 
 ## Contributing
 
-Contributions to this project are welcome! A `CONTRIBUTING.md` file with detailed guidelines will be added in the future. For now, please feel free to submit issues and pull requests.
+Contributions to this project are welcome! Please read the [CONTRIBUTING.md](CONTRIBUTING.md) guide for details on development setup, code style, pre-commit hooks, and how to submit changes.
 
 ## License
 
