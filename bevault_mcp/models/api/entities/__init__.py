@@ -1,4 +1,5 @@
 """Entity models for beVault API responses."""
+
 from .base_model_entity import BaseModelEntity
 from .hub import BusinessKey, Hub
 from .link import DataColumn, DependentChildColumn, HubReference, Link
@@ -8,7 +9,12 @@ from .reference_table import ReferenceTable
 from .satellite import Satellite
 from .source_system import DataPackage, SourceSystem
 from .staging_table import BaseType, Columns, StagingTable, StagingTableColumn
-from .information_mart import InformationMart, InformationMartScript, InformationMartScriptColumn, SourceColumn
+from .information_mart import (
+    InformationMart,
+    InformationMartScript,
+    InformationMartScriptColumn,
+    SourceColumn,
+)
 from .snapshot import Snapshot
 from .mapping import (
     HubMapping,

@@ -24,5 +24,6 @@ __all__ = [
     "InformationMartsResponse",
     "Snapshots",
     "SnapshotsResponse",
+    "Mappings",
+    "StagingTableMappingsResponse",
 ]
-

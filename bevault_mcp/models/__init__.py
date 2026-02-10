@@ -1,4 +1,5 @@
 """beVault MCP models package."""
+
 # API models (contract with beVault API)
 from .api import (
     BaseModelEntity,

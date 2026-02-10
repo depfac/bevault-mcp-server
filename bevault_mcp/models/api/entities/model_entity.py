@@ -1,4 +1,5 @@
 """Model entity representing hubs, links, satellites, etc."""
+
 from typing import Annotated, Union
 
 from pydantic import Discriminator

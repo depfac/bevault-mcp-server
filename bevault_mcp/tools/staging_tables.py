@@ -1,4 +1,5 @@
 """Staging tables tools."""
+
 import logging
 from typing import Any
 
@@ -8,7 +9,10 @@ from ..client import BeVaultClient
 from ..models import CreateStagingTableRequest, StagingTableColumn
 from ..models.api.entities.mapping import HubMapping, LinkMapping, SatelliteMapping
 from ..models.api.responses.mappings import ColumnMapping, FormattedMapping
-from ..models.requests.staging_table import BaseTypeRequest, UpdateStagingTableColumnRequest
+from ..models.requests.staging_table import (
+    BaseTypeRequest,
+    UpdateStagingTableColumnRequest,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -26,13 +30,13 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
     ) -> dict:
         """
         Create a staging table in a data package within a beVault project.
-        
+
         There are 4 ways to create a staging table:
         1. **Column list**: Provide a structured list of columns with their definitions
         2. **View**: Provide a SELECT statement to create a view
         3. **DDL Table**: Provide DDL column definitions as text
         4. **Existing table**: Reference an existing table in the stg schema (just provide tableName)
-        
+
         Args:
             projectName: Name of the project (will be resolved to project ID)
             sourceSystemIdOrName: ID (GUID) or name of the source system
@@ -50,7 +54,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
                    - businessDescription (str, optional): Business description
                    - businessName (str, optional): Business name
                    - technicalDescription (str, optional): Technical description
-        
+
         Returns:
             The created staging table entity as a dictionary.
         """
@@ -66,7 +70,9 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
 
             # Get project ID from project name
             project_id = client.projects.get_by_name(projectName)
-            logger.debug("Found project ID: %s for project: %s", project_id, projectName)
+            logger.debug(
+                "Found project ID: %s for project: %s", project_id, projectName
+            )
 
             # Validate queryType
             if queryType not in ["Table", "View"]:
@@ -79,11 +85,13 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
                 for col in columns:
                     if "name" not in col or "dataType" not in col:
                         raise ValueError("Each column must have 'name' and 'dataType'")
-                    
+
                     column_list.append(
                         StagingTableColumn(
                             name=col["name"],
-                            dataType=col["dataType"],  # Type mapping happens in the model
+                            dataType=col[
+                                "dataType"
+                            ],  # Type mapping happens in the model
                             length=col.get("length"),
                             businessDescription=col.get("businessDescription"),
                             businessName=col.get("businessName"),
@@ -101,12 +109,15 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
 
             # Create the staging table
             created_staging_table = client.source_systems.create_staging_table(
-                project_id, sourceSystemIdOrName, dataPackageIdOrName, staging_table_request
+                project_id,
+                sourceSystemIdOrName,
+                dataPackageIdOrName,
+                staging_table_request,
             )
 
             # Return the created staging table as a dictionary
             return created_staging_table.model_dump(mode="json", exclude_none=True)
-        except Exception as exc:  # noqa: BLE001
+        except Exception:  # noqa: BLE001
             logger.exception("create_staging_table failed")
             raise
 
@@ -126,7 +137,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
     ) -> dict:
         """
         Add a column to an existing staging table.
-        
+
         Args:
             projectName: Name of the project (will be resolved to project ID)
             sourceSystemIdOrName: ID (GUID) or name of the source system
@@ -139,7 +150,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
             hardRuleDefinition: Target database specific SQL code for type casting using {{column_name}} syntax (optional). Ex: "{{contract_number}}::int" for PostgreSQL.
             length: Length for String target type (optional, required for String/Text dataType)
             baseTypeLength: Length for String base type (optional, required for String/Text baseTypeDataType)
-        
+
         Returns:
             The created column entity as a dictionary.
         """
@@ -155,7 +166,9 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
 
             # Get project ID from project name
             project_id = client.projects.get_by_name(projectName)
-            logger.debug("Found project ID: %s for project: %s", project_id, projectName)
+            logger.debug(
+                "Found project ID: %s for project: %s", project_id, projectName
+            )
 
             # Create baseType object (simplified - backend will fill in isText, isBinary, autoIncrement)
             base_type = BaseTypeRequest(
@@ -176,12 +189,16 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
 
             # Add the column
             created_column = client.source_systems.add_staging_table_column(
-                project_id, sourceSystemIdOrName, dataPackageIdOrName, tableIdOrName, column_request
+                project_id,
+                sourceSystemIdOrName,
+                dataPackageIdOrName,
+                tableIdOrName,
+                column_request,
             )
 
             # Return the created column as a dictionary
             return created_column.model_dump(mode="json", exclude_none=True)
-        except Exception as exc:  # noqa: BLE001
+        except Exception:  # noqa: BLE001
             logger.exception("add_staging_table_column failed")
             raise
 
@@ -201,7 +218,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
     ) -> dict:
         """
         Update a column in a staging table.
-        
+
         Args:
             projectName: Name of the project (will be resolved to project ID)
             sourceSystemIdOrName: ID (GUID) or name of the source system
@@ -214,7 +231,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
             hardRuleDefinition: Target database specific SQL code for type casting using {{column_name}} syntax (optional). Ex: "{{contract_number}}::int" for PostgreSQL.
             length: Length for String target type (optional, required for String/Text dataType)
             baseTypeLength: Length for String base type (optional, required for String/Text baseTypeDataType)
-        
+
         Returns:
             The updated column entity as a dictionary.
         """
@@ -230,7 +247,9 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
 
             # Get project ID from project name
             project_id = client.projects.get_by_name(projectName)
-            logger.debug("Found project ID: %s for project: %s", project_id, projectName)
+            logger.debug(
+                "Found project ID: %s for project: %s", project_id, projectName
+            )
 
             # Create baseType object (simplified - backend will fill in isText, isBinary, autoIncrement)
             base_type = BaseTypeRequest(
@@ -252,12 +271,16 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
 
             # Update the column
             updated_column = client.source_systems.update_staging_table_column(
-                project_id, sourceSystemIdOrName, dataPackageIdOrName, columnId, column_request
+                project_id,
+                sourceSystemIdOrName,
+                dataPackageIdOrName,
+                columnId,
+                column_request,
             )
 
             # Return the updated column as a dictionary
             return updated_column.model_dump(mode="json", exclude_none=True)
-        except Exception as exc:  # noqa: BLE001
+        except Exception:  # noqa: BLE001
             logger.exception("update_staging_table_column failed")
             raise
 
@@ -270,13 +293,13 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
     ) -> dict:
         """
         Get information about a staging table including its columns and mappings.
-        
+
         Args:
             projectName: Name of the project (will be resolved to project ID)
             sourceSystemIdOrName: ID (GUID) or name of the source system
             dataPackageIdOrName: ID (GUID) or name of the data package
             tableId: ID (GUID) of the staging table
-        
+
         Returns:
             A dictionary containing staging table information with columns and user-friendly mappings.
         """
@@ -291,7 +314,9 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
 
             # Get project ID from project name
             project_id = client.projects.get_by_name(projectName)
-            logger.debug("Found project ID: %s for project: %s", project_id, projectName)
+            logger.debug(
+                "Found project ID: %s for project: %s", project_id, projectName
+            )
 
             # Get staging table
             staging_table = client.source_systems.get_staging_table(
@@ -300,7 +325,12 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
 
             # Get mappings
             mappings_response = client.source_systems.get_staging_table_mappings(
-                project_id, sourceSystemIdOrName, dataPackageIdOrName, tableIdOrName, index=0, limit=1000000
+                project_id,
+                sourceSystemIdOrName,
+                dataPackageIdOrName,
+                tableIdOrName,
+                index=0,
+                limit=1000000,
             )
 
             # Create a column lookup by ID
@@ -310,15 +340,18 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
             parsed_mappings = {}
             hub_mapping_column_lookup = {}  # mapping_id -> column_name for hub mappings
             link_entities = {}  # link_id -> Link entity (cached to avoid multiple fetches)
-            
+
             for mapping_data in mappings_response.mappings_list:
                 mapping_type = mapping_data.get("mappingType", "")
                 mapping_id = mapping_data.get("id")
-                
+
                 if mapping_type == "Hub":
                     mapping = HubMapping.model_validate(mapping_data)
                     parsed_mappings[mapping_id] = mapping
-                    column_name = column_lookup.get(mapping.businessKeyMapping.columnId, mapping.businessKeyMapping.columnId)
+                    column_name = column_lookup.get(
+                        mapping.businessKeyMapping.columnId,
+                        mapping.businessKeyMapping.columnId,
+                    )
                     hub_mapping_column_lookup[mapping_id] = column_name
                 elif mapping_type == "Link":
                     mapping = LinkMapping.model_validate(mapping_data)
@@ -326,10 +359,14 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
                     # Fetch Link entity if not already cached
                     if mapping.linkId not in link_entities:
                         try:
-                            link_entity = client.model.get_link_by_id(project_id, mapping.linkId)
+                            link_entity = client.model.get_link_by_id(
+                                project_id, mapping.linkId
+                            )
                             link_entities[mapping.linkId] = link_entity
                         except Exception as e:
-                            logger.warning("Failed to fetch link %s: %s", mapping.linkId, e)
+                            logger.warning(
+                                "Failed to fetch link %s: %s", mapping.linkId, e
+                            )
                             link_entities[mapping.linkId] = None
                 elif mapping_type == "Satellite":
                     mapping = SatelliteMapping.model_validate(mapping_data)
@@ -339,7 +376,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
             formatted_mappings = []
             for mapping_id, mapping in parsed_mappings.items():
                 column_mappings = []
-                
+
                 if isinstance(mapping, HubMapping):
                     # Hub mapping: one column mapping (source column -> business key "bk")
                     source_column_name = hub_mapping_column_lookup.get(mapping_id, "")
@@ -359,16 +396,16 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
                         columnMappings=column_mappings,
                         isFullLoad=mapping.isFullLoad,
                     )
-                    
+
                 elif isinstance(mapping, LinkMapping):
                     # Link mapping: multiple column mappings (hub refs, dependent children, data columns)
                     link_entity = link_entities.get(mapping.linkId)
-                    
+
                     # Build lookups from Link entity's structured fields
                     hub_ref_lookup = {}  # hubReferenceId -> columnName
                     dependent_child_lookup = {}  # dependentChildId -> columnName
                     data_column_lookup = {}  # dataColumnId -> columnName
-                    
+
                     if link_entity:
                         # Hub references
                         for hub_ref in link_entity.hubReferences:
@@ -379,11 +416,15 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
                         # Data columns
                         for data_col in link_entity.dataColumns:
                             data_column_lookup[data_col.id] = data_col.columnName
-                    
+
                     # Hub reference column mappings
                     for hub_ref in mapping.hubReferenceColumnMappings:
-                        source_column_name = hub_mapping_column_lookup.get(hub_ref.mappingId, "")
-                        destination_column_name = hub_ref_lookup.get(hub_ref.hubReferenceId, "")
+                        source_column_name = hub_mapping_column_lookup.get(
+                            hub_ref.mappingId, ""
+                        )
+                        destination_column_name = hub_ref_lookup.get(
+                            hub_ref.hubReferenceId, ""
+                        )
                         column_mappings.append(
                             ColumnMapping(
                                 sourceColumnName=source_column_name,
@@ -392,11 +433,16 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
                                 destinationColumnName=destination_column_name,
                             )
                         )
-                    
+
                     # Dependent child column mappings
                     for dep_child in mapping.dependentChildColumnMappings:
-                        source_column_name = column_lookup.get(dep_child.stagingTableColumnId, dep_child.stagingTableColumnId)
-                        destination_column_name = dependent_child_lookup.get(dep_child.dependentChildId, "")
+                        source_column_name = column_lookup.get(
+                            dep_child.stagingTableColumnId,
+                            dep_child.stagingTableColumnId,
+                        )
+                        destination_column_name = dependent_child_lookup.get(
+                            dep_child.dependentChildId, ""
+                        )
                         column_mappings.append(
                             ColumnMapping(
                                 sourceColumnName=source_column_name,
@@ -405,11 +451,15 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
                                 destinationColumnName=destination_column_name,
                             )
                         )
-                    
+
                     # Data column mappings
                     for data_col in mapping.dataColumnMappings:
-                        source_column_name = column_lookup.get(data_col.stagingTableColumnId, data_col.stagingTableColumnId)
-                        destination_column_name = data_column_lookup.get(data_col.dataColumnId, "")
+                        source_column_name = column_lookup.get(
+                            data_col.stagingTableColumnId, data_col.stagingTableColumnId
+                        )
+                        destination_column_name = data_column_lookup.get(
+                            data_col.dataColumnId, ""
+                        )
                         column_mappings.append(
                             ColumnMapping(
                                 sourceColumnName=source_column_name,
@@ -418,7 +468,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
                                 destinationColumnName=destination_column_name,
                             )
                         )
-                    
+
                     formatted_mapping = FormattedMapping(
                         id=mapping.id,
                         name=mapping.name,
@@ -427,11 +477,13 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
                         columnMappings=column_mappings,
                         isFullLoad=mapping.isFullLoad,
                     )
-                    
+
                 elif isinstance(mapping, SatelliteMapping):
                     # Satellite mapping: multiple column mappings (source = destination name)
                     for sat_col in mapping.satelliteColumnMappings:
-                        source_column_name = column_lookup.get(sat_col.stagingTableColumnId, sat_col.stagingTableColumnId)
+                        source_column_name = column_lookup.get(
+                            sat_col.stagingTableColumnId, sat_col.stagingTableColumnId
+                        )
                         column_mappings.append(
                             ColumnMapping(
                                 sourceColumnName=source_column_name,
@@ -440,7 +492,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
                                 destinationColumnName=source_column_name,  # Source = destination for satellites
                             )
                         )
-                    
+
                     formatted_mapping = FormattedMapping(
                         id=mapping.id,
                         name=mapping.name,
@@ -459,7 +511,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
                         columnMappings=[],
                         isFullLoad=None,
                     )
-                
+
                 formatted_mappings.append(formatted_mapping)
 
             # Build the response
@@ -486,11 +538,14 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
                     }
                     for col in staging_table.columns
                 ],
-                "mappings": [m.model_dump(mode="json", exclude_none=True) for m in formatted_mappings],
+                "mappings": [
+                    m.model_dump(mode="json", exclude_none=True)
+                    for m in formatted_mappings
+                ],
             }
 
             return result
-        except Exception as exc:  # noqa: BLE001
+        except Exception:  # noqa: BLE001
             logger.exception("get_staging_table failed")
             raise
 
@@ -503,13 +558,13 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
     ) -> dict:
         """
         Delete a column from a staging table.
-        
+
         Args:
             projectName: Name of the project (will be resolved to project ID)
             sourceSystemIdOrName: ID (GUID) or name of the source system
             dataPackageIdOrName: ID (GUID) or name of the data package
             columnId: ID (GUID) of the column to delete
-        
+
         Returns:
             A confirmation message as a dictionary.
         """
@@ -524,7 +579,9 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
 
             # Get project ID from project name
             project_id = client.projects.get_by_name(projectName)
-            logger.debug("Found project ID: %s for project: %s", project_id, projectName)
+            logger.debug(
+                "Found project ID: %s for project: %s", project_id, projectName
+            )
 
             # Delete the column
             client.source_systems.delete_staging_table_column(
@@ -533,7 +590,6 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
 
             # Return confirmation
             return {"message": f"Column '{columnId}' deleted successfully"}
-        except Exception as exc:  # noqa: BLE001
+        except Exception:  # noqa: BLE001
             logger.exception("delete_staging_table_column failed")
             raise
-

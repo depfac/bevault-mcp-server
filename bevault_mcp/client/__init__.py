@@ -1,8 +1,9 @@
 """Main beVault client."""
+
 import httpx
 
 from ..config import Settings
-from .base import BaseClient
+from .base import BaseClient as BaseClient
 from .information_marts import InformationMartsClient
 from .mappings import MappingsClient
 from .model import ModelClient
@@ -40,4 +41,3 @@ class BeVaultClient:
     def close(self) -> None:
         """Close the HTTP client."""
         self._client.close()
-

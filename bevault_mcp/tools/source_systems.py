@@ -31,7 +31,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
     ) -> dict:
         """
         Create a source system in a beVault project.
-        
+
         Args:
             projectName: Name of the project (will be resolved to project ID)
             name: Name of the source system (mandatory, must be unique)
@@ -42,16 +42,20 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
             businessDescription: Business description of the source system (optional)
             dataSteward: Data steward responsible for the source system (optional)
             systemAdministrator: System administrator for the source system (optional)
-        
+
         Returns:
             The created source system entity as a dictionary.
         """
         try:
-            logger.info("create_source_system: projectName=%s, name=%s", projectName, name)
+            logger.info(
+                "create_source_system: projectName=%s, name=%s", projectName, name
+            )
 
             # Get project ID from project name
             project_id = client.projects.get_by_name(projectName)
-            logger.debug("Found project ID: %s for project: %s", project_id, projectName)
+            logger.debug(
+                "Found project ID: %s for project: %s", project_id, projectName
+            )
 
             # Build the source system request
             source_system_request = CreateSourceSystemRequest(
@@ -66,11 +70,13 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
             )
 
             # Create the source system
-            created_source_system = client.source_systems.create(project_id, source_system_request)
-            
+            created_source_system = client.source_systems.create(
+                project_id, source_system_request
+            )
+
             # Return the created source system as a dictionary
             return created_source_system.model_dump(mode="json", exclude_none=True)
-        except Exception as exc:  # noqa: BLE001
+        except Exception:  # noqa: BLE001
             logger.exception("create_source_system failed")
             raise
 
@@ -88,7 +94,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
     ) -> dict:
         """
         Create a data package in a source system within a beVault project.
-        
+
         Args:
             projectName: Name of the project (will be resolved to project ID)
             sourceSystemName: Name or ID of the source system
@@ -99,16 +105,23 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
             refreshType: Refresh type of the data package (optional, e.g., "automatic")
             formatInfo: Format information of the data package (optional)
             expectedQuality: Expected quality of the data package (optional, integer)
-        
+
         Returns:
             The created data package entity as a dictionary.
         """
         try:
-            logger.info("create_data_package: projectName=%s, sourceSystemName=%s, name=%s", projectName, sourceSystemName, name)
+            logger.info(
+                "create_data_package: projectName=%s, sourceSystemName=%s, name=%s",
+                projectName,
+                sourceSystemName,
+                name,
+            )
 
             # Get project ID from project name
             project_id = client.projects.get_by_name(projectName)
-            logger.debug("Found project ID: %s for project: %s", project_id, projectName)
+            logger.debug(
+                "Found project ID: %s for project: %s", project_id, projectName
+            )
 
             # Build the data package request
             data_package_request = CreateDataPackageRequest(
@@ -125,10 +138,10 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
             created_data_package = client.source_systems.create_data_package(
                 project_id, sourceSystemName, data_package_request
             )
-            
+
             # Return the created data package as a dictionary
             return created_data_package.model_dump(mode="json", exclude_none=True)
-        except Exception as exc:  # noqa: BLE001
+        except Exception:  # noqa: BLE001
             logger.exception("create_data_package failed")
             raise
 
@@ -142,22 +155,28 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         """
         Search source systems in a beVault project.
         Returns optimized paginated response with paging info and source systems (including their data packages).
-        
+
         Args:
             projectName: Name of the project (will be resolved to project ID)
             contains: Optional filter string - if provided, filters source systems where name contains this value
             index: Pagination index (default: 0)
             limit: Maximum number of results (default: 10)
-        
+
         Returns:
             Optimized source systems search response with paging and source systems (including packages).
         """
         try:
-            logger.info("search_source_systems: projectName=%s, contains=%s", projectName, contains)
+            logger.info(
+                "search_source_systems: projectName=%s, contains=%s",
+                projectName,
+                contains,
+            )
 
             # Get project ID from project name
             project_id = client.projects.get_by_name(projectName)
-            logger.debug("Found project ID: %s for project: %s", project_id, projectName)
+            logger.debug(
+                "Found project ID: %s for project: %s", project_id, projectName
+            )
 
             # Build filter string if contains is provided
             filter_str = None
@@ -165,7 +184,9 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
                 filter_str = f"name contains {contains}"
 
             # Search source systems
-            result = client.source_systems.search(project_id, index=index, limit=limit, filter=filter_str)
+            result = client.source_systems.search(
+                project_id, index=index, limit=limit, filter=filter_str
+            )
 
             # Transform to optimized format
             optimized_source_systems = []
@@ -175,19 +196,30 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
                     # Get staging tables for this data package
                     staging_tables = []
                     try:
-                        staging_tables_response = client.source_systems.get_staging_tables(
-                            project_id, source_system.id, pkg.id, index=0, limit=1000000
+                        staging_tables_response = (
+                            client.source_systems.get_staging_tables(
+                                project_id,
+                                source_system.id,
+                                pkg.id,
+                                index=0,
+                                limit=1000000,
+                            )
                         )
                         staging_tables = [
                             StagingTableInfo(id=table.id, name=table.tableName)
                             for table in staging_tables_response.tables
                         ]
                         logger.debug(
-                            "Found %d staging tables for data package '%s'", len(staging_tables), pkg.name
+                            "Found %d staging tables for data package '%s'",
+                            len(staging_tables),
+                            pkg.name,
                         )
                     except Exception as e:
                         logger.warning(
-                            "Failed to fetch staging tables for data package '%s' (id: %s): %s", pkg.name, pkg.id, e
+                            "Failed to fetch staging tables for data package '%s' (id: %s): %s",
+                            pkg.name,
+                            pkg.id,
+                            e,
                         )
                         # Continue with empty list if fetch fails
 
@@ -230,7 +262,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
             )
 
             return optimized_response.model_dump(mode="json")
-        except Exception as exc:  # noqa: BLE001
+        except Exception:  # noqa: BLE001
             logger.exception("search_source_systems failed")
             raise
 
@@ -249,7 +281,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
     ) -> dict:
         """
         Update a source system in a beVault project.
-        
+
         Args:
             projectName: Name of the project (will be resolved to project ID)
             sourceSystemIdOrName: ID (GUID) or name of the source system to update
@@ -261,16 +293,23 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
             businessDescription: Business description of the source system (optional)
             dataSteward: Data steward responsible for the source system (optional)
             systemAdministrator: System administrator for the source system (optional)
-        
+
         Returns:
             The updated source system entity as a dictionary.
         """
         try:
-            logger.info("update_source_system: projectName=%s, sourceSystemIdOrName=%s, name=%s", projectName, sourceSystemIdOrName, name)
+            logger.info(
+                "update_source_system: projectName=%s, sourceSystemIdOrName=%s, name=%s",
+                projectName,
+                sourceSystemIdOrName,
+                name,
+            )
 
             # Get project ID from project name
             project_id = client.projects.get_by_name(projectName)
-            logger.debug("Found project ID: %s for project: %s", project_id, projectName)
+            logger.debug(
+                "Found project ID: %s for project: %s", project_id, projectName
+            )
 
             # Build the source system request
             source_system_request = CreateSourceSystemRequest(
@@ -285,11 +324,13 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
             )
 
             # Update the source system
-            updated_source_system = client.source_systems.update(project_id, sourceSystemIdOrName, source_system_request)
-            
+            updated_source_system = client.source_systems.update(
+                project_id, sourceSystemIdOrName, source_system_request
+            )
+
             # Return the updated source system as a dictionary
             return updated_source_system.model_dump(mode="json", exclude_none=True)
-        except Exception as exc:  # noqa: BLE001
+        except Exception:  # noqa: BLE001
             logger.exception("update_source_system failed")
             raise
 
@@ -300,27 +341,35 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
     ) -> dict:
         """
         Delete a source system from a beVault project.
-        
+
         Args:
             projectName: Name of the project (will be resolved to project ID)
             sourceSystemIdOrName: ID (GUID) or name of the source system to delete
-        
+
         Returns:
             A confirmation message as a dictionary.
         """
         try:
-            logger.info("delete_source_system: projectName=%s, sourceSystemIdOrName=%s", projectName, sourceSystemIdOrName)
+            logger.info(
+                "delete_source_system: projectName=%s, sourceSystemIdOrName=%s",
+                projectName,
+                sourceSystemIdOrName,
+            )
 
             # Get project ID from project name
             project_id = client.projects.get_by_name(projectName)
-            logger.debug("Found project ID: %s for project: %s", project_id, projectName)
+            logger.debug(
+                "Found project ID: %s for project: %s", project_id, projectName
+            )
 
             # Delete the source system
             client.source_systems.delete(project_id, sourceSystemIdOrName)
-            
+
             # Return confirmation
-            return {"message": f"Source system '{sourceSystemIdOrName}' deleted successfully"}
-        except Exception as exc:  # noqa: BLE001
+            return {
+                "message": f"Source system '{sourceSystemIdOrName}' deleted successfully"
+            }
+        except Exception:  # noqa: BLE001
             logger.exception("delete_source_system failed")
             raise
 
@@ -339,7 +388,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
     ) -> dict:
         """
         Update a data package in a source system within a beVault project.
-        
+
         Args:
             projectName: Name of the project (will be resolved to project ID)
             sourceSystemIdOrName: ID (GUID) or name of the source system
@@ -351,17 +400,24 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
             refreshType: Refresh type of the data package (optional, e.g., "automatic")
             formatInfo: Format information of the data package (optional)
             expectedQuality: Expected quality of the data package (optional, integer)
-        
+
         Returns:
             The updated data package entity as a dictionary.
         """
         try:
-            logger.info("update_data_package: projectName=%s, sourceSystemIdOrName=%s, dataPackageIdOrName=%s, name=%s", 
-                       projectName, sourceSystemIdOrName, dataPackageIdOrName, name)
+            logger.info(
+                "update_data_package: projectName=%s, sourceSystemIdOrName=%s, dataPackageIdOrName=%s, name=%s",
+                projectName,
+                sourceSystemIdOrName,
+                dataPackageIdOrName,
+                name,
+            )
 
             # Get project ID from project name
             project_id = client.projects.get_by_name(projectName)
-            logger.debug("Found project ID: %s for project: %s", project_id, projectName)
+            logger.debug(
+                "Found project ID: %s for project: %s", project_id, projectName
+            )
 
             # Build the data package request
             data_package_request = CreateDataPackageRequest(
@@ -376,12 +432,15 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
 
             # Update the data package
             updated_data_package = client.source_systems.update_data_package(
-                project_id, sourceSystemIdOrName, dataPackageIdOrName, data_package_request
+                project_id,
+                sourceSystemIdOrName,
+                dataPackageIdOrName,
+                data_package_request,
             )
-            
+
             # Return the updated data package as a dictionary
             return updated_data_package.model_dump(mode="json", exclude_none=True)
-        except Exception as exc:  # noqa: BLE001
+        except Exception:  # noqa: BLE001
             logger.exception("update_data_package failed")
             raise
 
@@ -393,29 +452,38 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
     ) -> dict:
         """
         Delete a data package from a source system in a beVault project.
-        
+
         Args:
             projectName: Name of the project (will be resolved to project ID)
             sourceSystemIdOrName: ID (GUID) or name of the source system
             dataPackageIdOrName: ID (GUID) or name of the data package to delete
-        
+
         Returns:
             A confirmation message as a dictionary.
         """
         try:
-            logger.info("delete_data_package: projectName=%s, sourceSystemIdOrName=%s, dataPackageIdOrName=%s", 
-                       projectName, sourceSystemIdOrName, dataPackageIdOrName)
+            logger.info(
+                "delete_data_package: projectName=%s, sourceSystemIdOrName=%s, dataPackageIdOrName=%s",
+                projectName,
+                sourceSystemIdOrName,
+                dataPackageIdOrName,
+            )
 
             # Get project ID from project name
             project_id = client.projects.get_by_name(projectName)
-            logger.debug("Found project ID: %s for project: %s", project_id, projectName)
+            logger.debug(
+                "Found project ID: %s for project: %s", project_id, projectName
+            )
 
             # Delete the data package
-            client.source_systems.delete_data_package(project_id, sourceSystemIdOrName, dataPackageIdOrName)
-            
+            client.source_systems.delete_data_package(
+                project_id, sourceSystemIdOrName, dataPackageIdOrName
+            )
+
             # Return confirmation
-            return {"message": f"Data package '{dataPackageIdOrName}' deleted successfully from source system '{sourceSystemIdOrName}'"}
-        except Exception as exc:  # noqa: BLE001
+            return {
+                "message": f"Data package '{dataPackageIdOrName}' deleted successfully from source system '{sourceSystemIdOrName}'"
+            }
+        except Exception:  # noqa: BLE001
             logger.exception("delete_data_package failed")
             raise
-

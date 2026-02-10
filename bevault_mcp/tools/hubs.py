@@ -20,7 +20,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
     ) -> dict:
         """
         Create a hub in a beVault project.
-        
+
         Args:
             projectName: Name of the project (will be resolved to project ID)
             name: Name of the hub (mandatory, must be unique)
@@ -28,7 +28,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
             businessKeyLength: Length of the business key (default: 255)
             technicalDescription: Technical description of the hub (optional)
             businessDescription: Business description of the hub (optional)
-        
+
         Returns:
             The created hub entity as a dictionary.
         """
@@ -37,7 +37,9 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
 
             # Get project ID from project name
             project_id = client.projects.get_by_name(projectName)
-            logger.debug("Found project ID: %s for project: %s", project_id, projectName)
+            logger.debug(
+                "Found project ID: %s for project: %s", project_id, projectName
+            )
 
             # Build the hub request
             hub_request = CreateHubRequest(
@@ -50,10 +52,10 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
 
             # Create the hub
             created_hub = client.model.create_hub(project_id, hub_request)
-            
+
             # Return the created hub as a dictionary
             return created_hub.model_dump(mode="json", exclude_none=True)
-        except Exception as exc:  # noqa: BLE001
+        except Exception:  # noqa: BLE001
             logger.exception("create_hub failed")
             raise
 
@@ -69,7 +71,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
     ) -> dict:
         """
         Update a hub in a beVault project.
-        
+
         Args:
             projectName: Name of the project (will be resolved to project ID)
             hubIdOrName: ID (GUID) or name of the hub to update
@@ -78,16 +80,23 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
             businessKeyLength: Length of the business key (default: 255)
             technicalDescription: Technical description of the hub (optional)
             businessDescription: Business description of the hub (optional)
-        
+
         Returns:
             The updated hub entity as a dictionary.
         """
         try:
-            logger.info("update_hub: projectName=%s, hubIdOrName=%s, name=%s", projectName, hubIdOrName, name)
+            logger.info(
+                "update_hub: projectName=%s, hubIdOrName=%s, name=%s",
+                projectName,
+                hubIdOrName,
+                name,
+            )
 
             # Get project ID from project name
             project_id = client.projects.get_by_name(projectName)
-            logger.debug("Found project ID: %s for project: %s", project_id, projectName)
+            logger.debug(
+                "Found project ID: %s for project: %s", project_id, projectName
+            )
 
             # Build the hub request
             hub_request = CreateHubRequest(
@@ -100,10 +109,10 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
 
             # Update the hub
             updated_hub = client.model.update_hub(project_id, hubIdOrName, hub_request)
-            
+
             # Return the updated hub as a dictionary
             return updated_hub.model_dump(mode="json", exclude_none=True)
-        except Exception as exc:  # noqa: BLE001
+        except Exception:  # noqa: BLE001
             logger.exception("update_hub failed")
             raise
 
@@ -114,27 +123,30 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
     ) -> dict:
         """
         Delete a hub from a beVault project.
-        
+
         Args:
             projectName: Name of the project (will be resolved to project ID)
             hubIdOrName: ID (GUID) or name of the hub to delete
-        
+
         Returns:
             A confirmation message as a dictionary.
         """
         try:
-            logger.info("delete_hub: projectName=%s, hubIdOrName=%s", projectName, hubIdOrName)
+            logger.info(
+                "delete_hub: projectName=%s, hubIdOrName=%s", projectName, hubIdOrName
+            )
 
             # Get project ID from project name
             project_id = client.projects.get_by_name(projectName)
-            logger.debug("Found project ID: %s for project: %s", project_id, projectName)
+            logger.debug(
+                "Found project ID: %s for project: %s", project_id, projectName
+            )
 
             # Delete the hub
             client.model.delete_hub(project_id, hubIdOrName)
-            
+
             # Return confirmation
             return {"message": f"Hub '{hubIdOrName}' deleted successfully"}
-        except Exception as exc:  # noqa: BLE001
+        except Exception:  # noqa: BLE001
             logger.exception("delete_hub failed")
             raise
-

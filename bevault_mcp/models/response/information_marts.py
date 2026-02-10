@@ -1,4 +1,5 @@
 """Optimized information marts response models for MCP server (token-efficient)."""
+
 from typing import List, Optional
 
 from pydantic import BaseModel, Field

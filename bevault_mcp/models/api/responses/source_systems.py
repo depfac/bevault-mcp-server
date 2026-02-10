@@ -1,5 +1,6 @@
 """Source systems response models."""
-from typing import List, Optional
+
+from typing import List
 
 from pydantic import BaseModel, Field
 
@@ -33,4 +34,3 @@ class SourceSystemsResponse(PaginatedResponse):
     def source_systems(self) -> List[SourceSystemWithPackages]:
         """Convenience property to directly access the source systems list."""
         return self.embedded.sourceSystems
-

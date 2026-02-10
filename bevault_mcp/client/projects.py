@@ -1,4 +1,5 @@
 """Projects client."""
+
 import logging
 
 from ..models import ProjectsResponse
@@ -24,10 +25,10 @@ class ProjectsClient(BaseClient):
             raise ValueError(f"Project '{project_name}' not found")
         if projects_response.total > 1:
             logger.warning(
-                "Multiple projects found with name '%s', using the first one", project_name
+                "Multiple projects found with name '%s', using the first one",
+                project_name,
             )
         # Access projects list directly via convenience property
         if not projects_response.projects:
             raise ValueError("No projects found in response")
         return projects_response.projects[0].id
-

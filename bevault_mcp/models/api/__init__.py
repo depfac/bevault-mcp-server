@@ -1,4 +1,5 @@
 """beVault API models - contract with beVault API."""
+
 from .entities import (
     BaseModelEntity,
     BusinessKey,
@@ -62,4 +63,3 @@ __all__ = [
     "StagingTableMappingsResponse",
     "StagingTablesResponse",
 ]
-

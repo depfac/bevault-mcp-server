@@ -1,4 +1,5 @@
 """Mappings client."""
+
 import logging
 from typing import List
 
@@ -23,7 +24,7 @@ class MappingsClient(BaseClient):
     ) -> HubMapping:
         """
         Create a hub mapping for a staging table column.
-        
+
         Args:
             project_id: Project ID
             hub_url: Full URL to the hub (e.g., "{base_url}/metavault/api/projects/{project_id}/model/hubs/{hub_id_or_name}")
@@ -31,7 +32,7 @@ class MappingsClient(BaseClient):
             data_package_column_url: Full URL to the data package column
             is_full_load: Whether this is a full load (default: False)
             expect_null_business_key: Whether null business keys are expected (default: False)
-        
+
         Returns:
             The created hub mapping entity
         """
@@ -66,7 +67,7 @@ class MappingsClient(BaseClient):
     ) -> LinkMapping:
         """
         Create a link mapping for a staging table.
-        
+
         Args:
             project_id: Project ID
             link_url: Full URL to the link (e.g., "{base_url}/metavault/api/projects/{project_id}/model/links/{link_id_or_name}")
@@ -75,7 +76,7 @@ class MappingsClient(BaseClient):
             hub_references_details: List of objects with "hubMapping" (URL) and "hubReference" (URL)
             link_mapping_dependent_child_columns: List of objects with "linkColumnId" (ID) and "dataPackageTableColumn" (URL)
             link_mapping_data_columns: List of objects with "linkColumnId" (ID) and "dataPackageTableColumn" (URL)
-        
+
         Returns:
             The created link mapping entity (excluding _links).
         """
@@ -88,10 +89,12 @@ class MappingsClient(BaseClient):
         if hub_references_details:
             payload["hubReferencesDetails"] = hub_references_details
         if link_mapping_dependent_child_columns:
-            payload["linkMappingDependentChildColumns"] = link_mapping_dependent_child_columns
+            payload["linkMappingDependentChildColumns"] = (
+                link_mapping_dependent_child_columns
+            )
         if link_mapping_data_columns:
             payload["linkMappingDataColumns"] = link_mapping_data_columns
-        
+
         logger.debug("POST %s body=%s", path, payload)
         headers = self._get_auth_headers()
         logger.debug("Headers: %s", headers)
@@ -118,7 +121,7 @@ class MappingsClient(BaseClient):
     ) -> SatelliteMapping:
         """
         Create a satellite mapping for a staging table.
-        
+
         Args:
             project_id: Project ID
             parent_mapping_id: ID of the parent mapping (hub or link mapping)
@@ -128,13 +131,15 @@ class MappingsClient(BaseClient):
             staging_table_url: Full URL to the staging table
             is_multi_active: Whether this is a multi-active satellite (default: False)
             sub_sequence_column_url: Optional column URL for delta-driven multi-active satellites
-        
+
         Returns:
             The created satellite mapping entity
         """
         if parent_type not in ("hub", "link"):
-            raise ValueError(f"Invalid parent_type '{parent_type}'. Must be 'hub' or 'link'")
-        
+            raise ValueError(
+                f"Invalid parent_type '{parent_type}'. Must be 'hub' or 'link'"
+            )
+
         path = f"/metavault/api/projects/{project_id}/mappings/{parent_type}s/{parent_mapping_id}/satellites"
         payload = {
             "satelliteColumns": satellite_columns,
@@ -144,7 +149,7 @@ class MappingsClient(BaseClient):
         }
         if sub_sequence_column_url:
             payload["subSequenceColumn"] = sub_sequence_column_url
-        
+
         logger.debug("POST %s body=%s", path, payload)
         resp = self._client.post(
             path,
@@ -170,7 +175,7 @@ class MappingsClient(BaseClient):
     ) -> SatelliteMapping:
         """
         Update a satellite mapping for a staging table.
-        
+
         Args:
             project_id: Project ID
             satellite_mapping_id: ID of the satellite mapping to update
@@ -181,13 +186,15 @@ class MappingsClient(BaseClient):
             staging_table_url: Full URL to the staging table
             is_multi_active: Whether this is a multi-active satellite (default: False)
             sub_sequence_column_url: Optional column URL for delta-driven multi-active satellites
-        
+
         Returns:
             The updated satellite mapping entity
         """
         if parent_type not in ("hub", "link"):
-            raise ValueError(f"Invalid parent_type '{parent_type}'. Must be 'hub' or 'link'")
-        
+            raise ValueError(
+                f"Invalid parent_type '{parent_type}'. Must be 'hub' or 'link'"
+            )
+
         path = f"/metavault/api/projects/{project_id}/mappings/{parent_type}s/{parent_mapping_id}/satellites/{satellite_mapping_id}"
         payload = {
             "satelliteColumns": satellite_columns,
@@ -197,7 +204,7 @@ class MappingsClient(BaseClient):
         }
         if sub_sequence_column_url:
             payload["subSequenceColumn"] = sub_sequence_column_url
-        
+
         logger.debug("PUT %s body=%s", path, payload)
         resp = self._client.put(
             path,
@@ -212,7 +219,7 @@ class MappingsClient(BaseClient):
     def delete_mapping(self, project_id: str, path: str) -> None:
         """
         Delete a mapping by its API path.
-        
+
         Args:
             project_id: Project ID
             path: Full API path to the mapping (e.g., "/metavault/api/projects/{project_id}/mappings/hubs/{mappingId}")

@@ -1,7 +1,8 @@
 """Hub creation request models."""
+
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
 from ..api.base import BeVaultRequest
 
@@ -17,7 +18,8 @@ class CreateHubRequest(BeVaultRequest):
 
     name: str
     ignoreBusinessKeyCase: bool = False
-    businessKey: BusinessKeyRequest = Field(default_factory=lambda: BusinessKeyRequest(length=255))
+    businessKey: BusinessKeyRequest = Field(
+        default_factory=lambda: BusinessKeyRequest(length=255)
+    )
     technicalDescription: Optional[str] = None
     businessDescription: Optional[str] = None
-

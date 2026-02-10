@@ -1,4 +1,5 @@
 """Staging table entity models."""
+
 from typing import List, Optional
 
 from pydantic import BaseModel, Field
@@ -70,4 +71,3 @@ class StagingTable(BeVaultEntity):
         if self.embedded:
             return self.embedded.columns
         return []
-

@@ -1,4 +1,5 @@
 """Search response models."""
+
 from typing import List
 
 from pydantic import BaseModel, Field
@@ -27,4 +28,3 @@ class SearchResponse(PaginatedResponse):
     def entities(self) -> List[ModelEntity]:
         """Convenience property to directly access the entities list."""
         return self.embedded.entities
-

@@ -1,9 +1,14 @@
 """Request models for beVault API."""
+
 from .hub import BusinessKeyRequest, CreateHubRequest
 from .link import CreateLinkRequest, DependentChildColumn, HubReference, LinkType
 from .search import SearchParams
 from .source_system import CreateDataPackageRequest, CreateSourceSystemRequest
-from .staging_table import CreateStagingTableRequest, StagingTableColumn, UpdateStagingTableColumnRequest
+from .staging_table import (
+    CreateStagingTableRequest,
+    StagingTableColumn,
+    UpdateStagingTableColumnRequest,
+)
 from .information_mart import (
     CreateInformationMartRequest,
     CreateInformationMartScriptRequest,
@@ -31,4 +36,3 @@ __all__ = [
     "UpdateSourceColumnRequest",
     "UpdateStagingTableColumnRequest",
 ]
-

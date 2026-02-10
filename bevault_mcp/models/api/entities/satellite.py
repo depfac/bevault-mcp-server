@@ -1,4 +1,5 @@
 """Satellite entity model."""
+
 from typing import Any, List, Literal, Optional, Union
 
 from pydantic import Field, model_validator

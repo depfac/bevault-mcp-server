@@ -1,6 +1,7 @@
 """Staging table creation request models."""
+
 from typing import Literal, Optional
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import BaseModel, field_validator, model_validator
 
 from ..api.base import BeVaultRequest
 
@@ -8,10 +9,10 @@ from ..api.base import BeVaultRequest
 def map_user_type_to_api_type(user_type: str) -> str:
     """
     Map user-friendly type names to API type names.
-    
+
     Args:
         user_type: User-friendly type name
-        
+
     Returns:
         API type name
     """
@@ -66,7 +67,7 @@ class CreateStagingTableRequest(BeVaultRequest):
     def validate_request_structure(self) -> "CreateStagingTableRequest":
         """
         Validate the request structure based on creation type.
-        
+
         Rules:
         1. Column list: columns provided, queryType="Table"
         2. View: query provided (non-empty), queryType="View"
@@ -131,4 +132,3 @@ class UpdateStagingTableColumnRequest(BaseModel):
     def map_data_type(cls, v: str) -> str:
         """Map user-friendly type to API type."""
         return map_user_type_to_api_type(v)
-

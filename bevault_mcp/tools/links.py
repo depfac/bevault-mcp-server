@@ -4,11 +4,9 @@ from typing import Any
 from fastmcp import FastMCP
 
 from ..client import BeVaultClient
-from ..client.utils import is_guid
 from ..models import (
     CreateLinkRequest,
     DependentChildColumn,
-    Hub,
     HubReference,
     LinkType,
 )
@@ -24,7 +22,9 @@ def _process_hub_references(
     if hubReferences:
         for ref in hubReferences:
             if "columnName" not in ref or "hubName" not in ref or "order" not in ref:
-                raise ValueError("Each hubReference must have 'columnName', 'hubName', and 'order'")
+                raise ValueError(
+                    "Each hubReference must have 'columnName', 'hubName', and 'order'"
+                )
             # Get hub by name to get its ID
             hub_name = ref["hubName"]
             hub_entity = client.model.get_hub_by_name(project_id, hub_name)
@@ -53,7 +53,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
     ) -> dict:
         """
         Create a link in a beVault project.
-        
+
         Args:
             projectName: Name of the project (will be resolved to project ID)
             name: Name of the link (mandatory, must be unique)
@@ -63,7 +63,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
                           The hubName will be resolved to a hub URL
             technicalDescription: Technical description of the link (optional)
             businessDescription: Business description of the link (optional)
-        
+
         Returns:
             The created link entity as a dictionary.
         """
@@ -72,7 +72,9 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
 
             # Get project ID from project name
             project_id = client.projects.get_by_name(projectName)
-            logger.debug("Found project ID: %s for project: %s", project_id, projectName)
+            logger.debug(
+                "Found project ID: %s for project: %s", project_id, projectName
+            )
 
             # Parse link type
             try:
@@ -114,7 +116,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
 
             # Return the created link as a dictionary
             return created_link.model_dump(mode="json", exclude_none=True)
-        except Exception as exc:  # noqa: BLE001
+        except Exception:  # noqa: BLE001
             logger.exception("create_link failed")
             raise
 
@@ -125,26 +127,30 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
     ) -> dict:
         """
         Get link details by project name and link ID or name.
-        
+
         Args:
             projectName: Name of the project (will be resolved to project ID)
             linkIdOrName: ID (GUID) or name of the link
-        
+
         Returns:
-            The link entity as a dictionary with all details including hub references, 
+            The link entity as a dictionary with all details including hub references,
             dependent child columns, and data columns.
         """
         try:
-            logger.info("get_link: projectName=%s, linkIdOrName=%s", projectName, linkIdOrName)
+            logger.info(
+                "get_link: projectName=%s, linkIdOrName=%s", projectName, linkIdOrName
+            )
 
             # Get project ID from project name
             project_id = client.projects.get_by_name(projectName)
-            logger.debug("Found project ID: %s for project: %s", project_id, projectName)
+            logger.debug(
+                "Found project ID: %s for project: %s", project_id, projectName
+            )
             link_entity = client.model.get_link_by_id(project_id, linkIdOrName)
 
             # Return the link entity as a dictionary
             return link_entity.model_dump(mode="json", exclude_none=True)
-        except Exception as exc:  # noqa: BLE001
+        except Exception:  # noqa: BLE001
             logger.exception("get_link failed")
             raise
 
@@ -161,7 +167,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
     ) -> dict:
         """
         Update a link in a beVault project.
-        
+
         Args:
             projectName: Name of the project (will be resolved to project ID)
             linkIdOrName: ID (GUID) or name of the link to update
@@ -172,16 +178,23 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
                           The hubName will be resolved to a hub URL
             technicalDescription: Technical description of the link (optional)
             businessDescription: Business description of the link (optional)
-        
+
         Returns:
             The updated link entity as a dictionary.
         """
         try:
-            logger.info("update_link: projectName=%s, linkIdOrName=%s, name=%s", projectName, linkIdOrName, name)
+            logger.info(
+                "update_link: projectName=%s, linkIdOrName=%s, name=%s",
+                projectName,
+                linkIdOrName,
+                name,
+            )
 
             # Get project ID from project name
             project_id = client.projects.get_by_name(projectName)
-            logger.debug("Found project ID: %s for project: %s", project_id, projectName)
+            logger.debug(
+                "Found project ID: %s for project: %s", project_id, projectName
+            )
 
             # Parse link type
             try:
@@ -219,11 +232,13 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
             )
 
             # Update the link
-            updated_link = client.model.update_link(project_id, linkIdOrName, link_request)
+            updated_link = client.model.update_link(
+                project_id, linkIdOrName, link_request
+            )
 
             # Return the updated link as a dictionary
             return updated_link.model_dump(mode="json", exclude_none=True)
-        except Exception as exc:  # noqa: BLE001
+        except Exception:  # noqa: BLE001
             logger.exception("update_link failed")
             raise
 
@@ -234,27 +249,32 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
     ) -> dict:
         """
         Delete a link from a beVault project.
-        
+
         Args:
             projectName: Name of the project (will be resolved to project ID)
             linkIdOrName: ID (GUID) or name of the link to delete
-        
+
         Returns:
             A confirmation message as a dictionary.
         """
         try:
-            logger.info("delete_link: projectName=%s, linkIdOrName=%s", projectName, linkIdOrName)
+            logger.info(
+                "delete_link: projectName=%s, linkIdOrName=%s",
+                projectName,
+                linkIdOrName,
+            )
 
             # Get project ID from project name
             project_id = client.projects.get_by_name(projectName)
-            logger.debug("Found project ID: %s for project: %s", project_id, projectName)
+            logger.debug(
+                "Found project ID: %s for project: %s", project_id, projectName
+            )
 
             # Delete the link
             client.model.delete_link(project_id, linkIdOrName)
-            
+
             # Return confirmation
             return {"message": f"Link '{linkIdOrName}' deleted successfully"}
-        except Exception as exc:  # noqa: BLE001
+        except Exception:  # noqa: BLE001
             logger.exception("delete_link failed")
             raise
-

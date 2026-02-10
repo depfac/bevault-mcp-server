@@ -1,4 +1,5 @@
 """Base classes and mixins for beVault API models."""
+
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict, model_validator
@@ -32,4 +33,3 @@ class PaginatedResponseMixin(BeVaultApiMixin):
     """Mixin for paginated API responses."""
 
     model_config = ConfigDict(populate_by_name=True, extra="ignore")
-

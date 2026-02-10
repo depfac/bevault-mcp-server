@@ -1,4 +1,5 @@
 """Staging tables response models."""
+
 from typing import List
 
 from pydantic import BaseModel, Field
@@ -10,7 +11,9 @@ from .base import PaginatedResponse
 class StagingTables(BaseModel):
     """Embedded staging tables container."""
 
-    dataPackageTables: List[StagingTable] = Field(default_factory=list, alias="dataPackageTables")
+    dataPackageTables: List[StagingTable] = Field(
+        default_factory=list, alias="dataPackageTables"
+    )
 
 
 class StagingTablesResponse(PaginatedResponse):
@@ -27,4 +30,3 @@ class StagingTablesResponse(PaginatedResponse):
     def tables(self) -> List[StagingTable]:
         """Convenience property to directly access the staging tables list."""
         return self.embedded.dataPackageTables
-

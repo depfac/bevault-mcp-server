@@ -1,8 +1,9 @@
 """Link creation request models."""
+
 from enum import Enum
 from typing import List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
 from ..api.base import BeVaultRequest
 
@@ -40,4 +41,3 @@ class CreateLinkRequest(BeVaultRequest):
     hubReferences: List[HubReference] = Field(default_factory=list)
     technicalDescription: Optional[str] = None
     businessDescription: Optional[str] = None
-

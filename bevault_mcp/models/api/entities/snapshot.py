@@ -1,4 +1,5 @@
 """Snapshot entity model."""
+
 from typing import Optional
 
 from ..base import BeVaultEntity
