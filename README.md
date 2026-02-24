@@ -127,42 +127,7 @@ The server will start an HTTP MCP server accessible at `http://localhost:8000/mc
 
 ## Using with n8n
 
-### 1. Expose the Server (if needed)
-
-If your n8n instance is running in a different environment (e.g., Docker), you may need to expose the MCP server:
-
-- **Local n8n**: Use `http://localhost:8000/mcp` or `http://host.docker.internal:8000/mcp` if n8n is in Docker
-- **Remote n8n**: Use ngrok or similar service to expose your local server:
-  ```bash
-  ngrok http 8000
-  ```
-  This will provide a public URL like `https://abc123.ngrok.io`
-
-### 2. Configure n8n MCP Client Tool
-
-In n8n, create an AI agent using any LLM model and add an MCP Client Tool node with the following configuration:
-
-**Node Parameters:**
-- **Endpoint URL**: The URL of your MCP server (e.g., `http://host.docker.internal:8000/mcp` or `https://abc123.ngrok.io/mcp`)
-- **Authentication**: Select "Header Auth"
-- **Options**: Leave as default (empty object)
-
-**Credentials Setup:**
-
-Create credentials in n8n for the MCP Client Tool:
-
-1. **Credential Type**: Header Auth
-2. **Name**: `Authorization` (this is the header name)
-3. **Value**: `ApiToken [your-api-token]` where `[your-api-token]` is the API token you created in beVault
-
-**Example**: If your API token is `sk_abc123xyz789`, the value should be:
-```
-ApiToken sk_abc123xyz789
-```
-
-**Important**: The API token must be prefixed with `ApiToken ` (with a space) as required by beVault's API authentication format.
-
-
+For a complete guide on integrating the beVault MCP server with n8n—including installation, API key setup, workflow configuration, and system prompts—see the [How to use beVault MCP Server with n8n](https://support.bevault.io/en/bevault-documentation/current-version/bevault-mcp-server/how-to-use-bevault-mcp-server-with-n8n) documentation.
 
 ## Development
 - Code style and linting: ruff (see `CONTRIBUTING.md` for details)
