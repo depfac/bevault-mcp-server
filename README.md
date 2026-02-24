@@ -50,7 +50,33 @@ docker pull quay.io/dfakto_org/bevault_mcp
 docker run -e BEVAULT_BASE_URL=<your-url> -e REQUEST_TIMEOUT_SECONDS=30 quay.io/dfakto_org/bevault_mcp
 ```
 
-Or use docker-compose with environment variables configured in your compose file.
+**Quick deployment with Docker Compose**
+
+Create a `docker-compose.yml` file:
+
+```yaml
+services:
+  bevault-mcp:
+    container_name: bevault-mcp
+    image: quay.io/dfakto_org/bevault_mcp:v1.0.0
+    environment:
+      BEVAULT_BASE_URL: "https://bevault.your.domain"
+      REQUEST_TIMEOUT_SECONDS: "30"
+      MCP_HOST: 0.0.0.0
+      MCP_PORT: "8000"
+    ports:
+      - "8000:8000"
+    restart: always
+```
+
+Then run:
+```bash
+docker compose up -d
+```
+
+The MCP server will be available at `http://localhost:8000/mcp`. Remember to replace `https://bevault.your.domain` with your actual beVault instance URL.
+
+> **Deploying alongside beVault**: If you run the MCP server in the same docker-compose stack as beVault (see [Production deployment](https://support.bevault.io/en/bevault-documentation/current-version/architecture-installation/deployment/production-deployment)), you can set `BEVAULT_BASE_URL` to the **metavault-ui** service name instead of an external URL (e.g. `http://metavault-ui:80`). This is required because the MCP tools call the `/metavault` routes, which are served by the embedded reverse proxy of the metavault-ui front-end application.
 
 ## Configuration
 
