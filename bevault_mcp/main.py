@@ -1,7 +1,10 @@
 import logging
 import os
+from pathlib import Path
 
 from fastmcp import FastMCP
+from fastmcp.utilities.types import Image
+from mcp.types import Icon
 
 from .client import BeVaultClient
 from .config import Settings
@@ -16,7 +19,17 @@ def create_mcp_server() -> FastMCP:
     configure_logging()
     settings = Settings.from_env()
 
-    mcp = FastMCP("bevault-mcp")
+    icon_path = Path(__file__).resolve().parent / "assets" / "badge-color.svg"
+    icon = Icon(
+        src=Image(path=str(icon_path)).to_data_uri(),
+        mimeType="image/svg+xml",
+        sizes=["48x48"],
+    )
+    mcp = FastMCP(
+        "bevault-mcp",
+        website_url="https://github.com/depfac/bevault-mcp-server",
+        icons=[icon],
+    )
     client = BeVaultClient(settings)
 
     # Register all tools with FastMCP
