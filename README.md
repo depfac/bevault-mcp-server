@@ -11,6 +11,8 @@ This MCP server allows you to perform actions that users can do in the following
 
 > **Note**: Support for the **Verify** module will be added in a future release.
 
+> **v1.1.0 Migration**: With version v1.1.0 of this project, we migrated to FastMCP v3 which no longer supports the `Authorization` header to pass the beVault API token. As of v1.1.0, make sure to use the new `bevault-api-key` header in your MCP client to pass your beVault API token.
+
 The server exposes tools to interact with beVault's API using FastMCP with HTTP transport.
 
 ## Features
@@ -103,17 +105,17 @@ MCP_PORT=8000
 
 ### Authentication
 
-Authentication with beVault is handled via the `Authorization` header passed from the MCP client. When configuring your MCP client, you need to:
+Authentication with beVault is handled via the `bevault-api-key` header passed from the MCP client. When configuring your MCP client, you need to:
 
 1. **Create an API token** in beVault following the [beVault API Keys documentation](https://support.bevault.io/en/bevault-documentation/current-version/reference-guide/datafactory-user-reference-guide/datafactory-modules/client-admin/api-keys)
 
 2. **Configure your MCP client** to include the following header in all requests:
    ```
-   Authorization: ApiToken [your-api-token]
+   bevault-api-key: [your-api-token]
    ```
    Replace `[your-api-token]` with the actual API token you created.
 
-3. The MCP server will forward this `Authorization` header to beVault's API for authentication.
+3. The MCP server will forward this token to beVault's API for authentication.
 
 **Important**: The permissions and project access assigned to your API token determine what operations the MCP server can perform. Make sure to configure the API key with appropriate rights for the projects and modules you need to access.
 

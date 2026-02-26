@@ -27,7 +27,7 @@ class BaseClient:
     def _get_auth_headers(self) -> Dict[str, str]:
         """Get headers with Authorization from HTTP request using FastMCP's get_http_headers()."""
         headers = get_http_headers()
-        auth_header = headers.get("authorization") or headers.get("Authorization")
+        auth_header = headers.get("authorization") or headers.get("Authorization") or headers.get("bevault-api-key")
         if auth_header:
             return {"Authorization": auth_header}
         return {}
