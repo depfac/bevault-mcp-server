@@ -9,6 +9,7 @@ from mcp.types import Icon
 from .client import BeVaultClient
 from .config import Settings
 from .logging_config import configure_logging
+from .sentry_config import init_sentry
 from .tools import register_all_tools_fastmcp
 
 logger = logging.getLogger(__name__)
@@ -43,6 +44,7 @@ def create_mcp_server() -> FastMCP:
 
 def run() -> None:
     """Run the MCP server with HTTP transport"""
+    init_sentry()
     mcp = create_mcp_server()
 
     # Get host and port from environment or use defaults
