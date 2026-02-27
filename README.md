@@ -103,6 +103,48 @@ MCP_PORT=8000
 - `MCP_HOST`: The host address on which the MCP server will run (optional, default: `0.0.0.0`)
 - `MCP_PORT`: The port on which the MCP server will run (optional, default: `8000`)
 
+### Sentry Monitoring
+
+Sentry integration is optional. When `SENTRY_DSN` is set, the server initializes Sentry with the [MCP integration](https://docs.sentry.io/platforms/python/integrations/mcp/) for monitoring tool executions, errors, and performance.
+
+```ini
+# Sentry (optional - unset or leave empty to disable)
+SENTRY_DSN=https://your-dsn@sentry.io/project-id
+SENTRY_ENVIRONMENT=production
+SENTRY_TRACES_SAMPLE_RATE=1.0
+SENTRY_SEND_DEFAULT_PII=false
+SENTRY_SERVER_NAME=bevault-mcp-prod
+SENTRY_DEFAULTTAGS__service=bevault-mcp
+SENTRY_DEFAULTTAGS__deployment=prod
+```
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `SENTRY_DSN` | — | Sentry project DSN; required to enable Sentry |
+| `SENTRY_ENVIRONMENT` | `production` | Environment name for grouping in Sentry |
+| `SENTRY_TRACES_SAMPLE_RATE` | `1.0` | Fraction of transactions to trace (0.0–1.0) |
+| `SENTRY_SEND_DEFAULT_PII` | `false` | Include tool inputs/outputs (PII) in events |
+| `SENTRY_DEBUG` | `false` | Enable Sentry SDK debug logging |
+| `SENTRY_INCLUDE_PROMPTS` | `true` | Include prompt/tool data in spans (when PII enabled) |
+| `SENTRY_SERVER_NAME` | — | Server instance identifier |
+| `SENTRY_DEFAULTTAGS__[key]` | — | Default tags, e.g. `SENTRY_DEFAULTTAGS__service=bevault-mcp` |
+
+### OpenTelemetry Tracing
+
+OpenTelemetry tracing is optional. When `OTEL_EXPORTER_OTLP_ENDPOINT` is set, the server exports traces to an OTLP collector. Compatible with Jaeger, Zipkin, Grafana Tempo, Datadog, and other OTLP backends.
+
+```ini
+# OpenTelemetry (optional - unset or leave empty to disable)
+OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
+OTEL_SERVICE_NAME=bevault-mcp
+OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+```
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | — | OTLP collector endpoint; required to enable tracing |
+| `OTEL_SERVICE_NAME` | `bevault-mcp` | Service name in traces |
+
 ### Authentication
 
 Authentication with beVault is handled via the `bevault-api-key` header passed from the MCP client. When configuring your MCP client, you need to:

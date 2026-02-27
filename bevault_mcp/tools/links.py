@@ -55,7 +55,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         Create a link in a beVault project.
 
         Args:
-            projectName: Name of the project (will be resolved to project ID)
+            projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
             name: Name of the link (mandatory, must be unique)
             linkType: Type of link - Relationship, Hierarchy, Transaction, or SameAs (default: Relationship)
             dependentChildColumns: List of dependent child columns, each with 'columnName' and 'dataType'
@@ -129,7 +129,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         Get link details by project name and link ID or name.
 
         Args:
-            projectName: Name of the project (will be resolved to project ID)
+            projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
             linkIdOrName: ID (GUID) or name of the link
 
         Returns:
@@ -169,7 +169,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         Update a link in a beVault project.
 
         Args:
-            projectName: Name of the project (will be resolved to project ID)
+            projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
             linkIdOrName: ID (GUID) or name of the link to update
             name: Name of the link (mandatory, must be unique)
             linkType: Type of link - Relationship, Hierarchy, Transaction, or SameAs (default: Relationship)
@@ -251,7 +251,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         Delete a link from a beVault project.
 
         Args:
-            projectName: Name of the project (will be resolved to project ID)
+            projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
             linkIdOrName: ID (GUID) or name of the link to delete
 
         Returns:

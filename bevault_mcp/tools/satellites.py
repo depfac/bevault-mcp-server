@@ -22,7 +22,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         Get satellite details by project name, parent type, parent ID/name, and satellite ID/name.
 
         Args:
-            projectName: Name of the project (will be resolved to project ID)
+            projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
             parentType: Type of parent - "hub" or "link"
             parentIdOrName: ID (GUID) or name of the parent hub or link
             satelliteIdOrName: ID (GUID) or name of the satellite

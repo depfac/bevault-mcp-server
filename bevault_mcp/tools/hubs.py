@@ -22,7 +22,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         Create a hub in a beVault project.
 
         Args:
-            projectName: Name of the project (will be resolved to project ID)
+            projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
             name: Name of the hub (mandatory, must be unique)
             ignoreBusinessKeyCase: Whether to ignore case in business key (default: False)
             businessKeyLength: Length of the business key (default: 255)
@@ -73,7 +73,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         Update a hub in a beVault project.
 
         Args:
-            projectName: Name of the project (will be resolved to project ID)
+            projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
             hubIdOrName: ID (GUID) or name of the hub to update
             name: Name of the hub (mandatory, must be unique)
             ignoreBusinessKeyCase: Whether to ignore case in business key (default: False)
@@ -124,8 +124,11 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         """
         Delete a hub from a beVault project.
 
+        IMPORTANT: You must first delete all links referencing the hub before
+        deleting it. Use the delete_link tool to remove the links.
+
         Args:
-            projectName: Name of the project (will be resolved to project ID)
+            projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
             hubIdOrName: ID (GUID) or name of the hub to delete
 
         Returns:

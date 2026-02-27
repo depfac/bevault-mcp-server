@@ -408,7 +408,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         Map a staging table column to a hub.
 
         Args:
-            projectName: Name of the project (will be resolved to project ID)
+            projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
             sourceSystemIdOrName: ID (GUID) or name of the source system (API accepts both)
             dataPackageIdOrName: ID (GUID) or name of the data package (API accepts both)
             stagingTableIdOrName: ID (GUID) or name of the staging table (will be resolved to ID if not GUID)
@@ -515,7 +515,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         Map staging table columns to a link.
 
         Args:
-            projectName: Name of the project (will be resolved to project ID)
+            projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
             sourceSystemIdOrName: ID (GUID) or name of the source system (API accepts both)
             dataPackageIdOrName: ID (GUID) or name of the data package (API accepts both)
             stagingTableIdOrName: ID (GUID) or name of the staging table (will be resolved to ID if not GUID)
@@ -703,7 +703,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         Map staging table columns to a satellite.
 
         Args:
-            projectName: Name of the project (will be resolved to project ID)
+            projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
             sourceSystemIdOrName: ID (GUID) or name of the source system (API accepts both)
             dataPackageIdOrName: ID (GUID) or name of the data package (API accepts both)
             stagingTableIdOrName: ID (GUID) or name of the staging table (will be resolved to ID if not GUID)
@@ -843,8 +843,12 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         The mapping type (Hub, Link, or Satellite) is automatically determined.
         For satellite mappings, the parent mapping is found to determine the correct delete path.
 
+        IMPORTANT: 
+            To delete a link mapping, you must first delete all satellites mappings using the link mapping. 
+            To delete a hub mapping, you must first delete all satellites and link mappings using the hub mapping.
+
         Args:
-            projectName: Name of the project (will be resolved to project ID)
+            projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
             sourceSystemIdOrName: ID (GUID) or name of the source system
             dataPackageIdOrName: ID (GUID) or name of the data package
             tableIdOrName: ID (GUID) or name of the staging table
@@ -1028,7 +1032,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         The parent mapping (hub or link) is automatically determined from the satellite mapping.
 
         Args:
-            projectName: Name of the project (will be resolved to project ID)
+            projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
             sourceSystemIdOrName: ID (GUID) or name of the source system (API accepts both)
             dataPackageIdOrName: ID (GUID) or name of the data package (API accepts both)
             stagingTableIdOrName: ID (GUID) or name of the staging table (will be resolved to ID if not GUID)

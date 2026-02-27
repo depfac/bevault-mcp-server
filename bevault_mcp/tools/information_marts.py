@@ -31,7 +31,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         Returns optimized paginated response with paging info and information marts (with simplified script info).
 
         Args:
-            projectName: Name of the project (will be resolved to project ID)
+            projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
             searchName: Optional search string - if provided, filters information marts where name contains this value
             index: Pagination index (default: 0)
             limit: Maximum number of results (default: 10)
@@ -116,7 +116,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         Returns the complete script metadata including columns and their source columns.
 
         Args:
-            projectName: Name of the project (will be resolved to project ID)
+            projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
             informationMartIdOrName: Information mart ID or name (will be resolved to ID)
             scriptIdOrName: Script ID or name (will be resolved to ID)
 
@@ -178,7 +178,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         Create an information mart in a beVault project.
 
         Args:
-            projectName: Name of the project (will be resolved to project ID)
+            projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
             name: Name of the information mart (required)
             schema: Schema name for the information mart (required)
             prefix: Table prefix for the information mart (optional)
@@ -250,7 +250,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         Create an information mart script in a beVault project.
 
         Args:
-            projectName: Name of the project (will be resolved to project ID)
+            projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
             informationMartIdOrName: ID (GUID) or name of the information mart
             name: Name of the script (required)
             order: Execution order (optional, will be calculated as max(order) + 1 if not provided)
@@ -334,7 +334,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         Update an information mart script's metadata (excluding code) in a beVault project.
 
         Args:
-            projectName: Name of the project (will be resolved to project ID)
+            projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
             informationMartIdOrName: ID (GUID) or name of the information mart
             scriptIdOrName: ID (GUID) or name of the script to update
             name: Name of the script (required)
@@ -498,7 +498,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         This tool fetches the existing script metadata first, then updates only the code field.
 
         Args:
-            projectName: Name of the project (will be resolved to project ID)
+            projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
             informationMartIdOrName: ID (GUID) or name of the information mart
             scriptIdOrName: ID (GUID) or name of the script to update
             code: The SQL code to set for the script (required)
@@ -562,7 +562,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         Update an information mart in a beVault project.
 
         Args:
-            projectName: Name of the project (will be resolved to project ID)
+            projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
             informationMartIdOrName: ID (GUID) or name of the information mart to update
             name: Name of the information mart (required)
             schema: Schema name for the information mart (required)
@@ -631,7 +631,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         Get snapshots for a beVault project.
 
         Args:
-            projectName: Name of the project (will be resolved to project ID)
+            projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
             index: Pagination index (default: 0)
             limit: Maximum number of results (default: 1000000 to get all snapshots)
 
@@ -671,8 +671,11 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         """
         Delete an information mart from a beVault project.
 
+        IMPORTANT: You must first delete all scripts in the information mart before
+        deleting it. Use the delete_information_mart_script tool to remove the scripts.
+
         Args:
-            projectName: Name of the project (will be resolved to project ID)
+            projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
             informationMartIdOrName: ID (GUID) or name of the information mart to delete
 
         Returns:
@@ -712,7 +715,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         Delete an information mart script from a beVault project.
 
         Args:
-            projectName: Name of the project (will be resolved to project ID)
+            projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
             informationMartIdOrName: ID (GUID) or name of the information mart
             scriptIdOrName: ID (GUID) or name of the script to delete
 
