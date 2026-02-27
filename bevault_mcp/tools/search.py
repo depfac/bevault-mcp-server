@@ -126,6 +126,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
     ) -> dict:
         """
         Search entities in beVault model (Hubs, Links, Satellites, ReferenceTables).
+        The projectName is mandatory and should be unquoted and is case sensitive.
         Returns optimized paginated response with paging info and entities (mappings removed, business key simplified, parent names for satellites).
         """
         try:

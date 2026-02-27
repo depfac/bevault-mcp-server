@@ -393,6 +393,28 @@ class SourceSystemsClient(BaseClient):
         resp.raise_for_status()
 
     @BaseClient._retry_decorator()
+    def delete_staging_table(
+        self,
+        project_id: str,
+        source_system_id_or_name: str,
+        data_package_id_or_name: str,
+        table_id_or_name: str,
+    ) -> None:
+        """
+        Delete a staging table from a data package.
+
+        Args:
+            project_id: Project ID
+            source_system_id_or_name: Source system ID or name (API accepts both)
+            data_package_id_or_name: Data package ID or name (API accepts both)
+            table_id_or_name: Staging table ID or name (API accepts both)
+        """
+        path = f"/metavault/api/projects/{project_id}/metavault/sourcesystems/{source_system_id_or_name}/datapackages/{data_package_id_or_name}/tables/{table_id_or_name}"
+        logger.debug("DELETE %s", path)
+        resp = self._client.delete(path, headers=self._get_auth_headers())
+        resp.raise_for_status()
+
+    @BaseClient._retry_decorator()
     def get_staging_table(
         self,
         project_id: str,

@@ -593,3 +593,55 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         except Exception:  # noqa: BLE001
             logger.exception("delete_staging_table_column failed")
             raise
+
+    @mcp.tool()
+    def delete_staging_table(
+        projectName: str,
+        sourceSystemIdOrName: str,
+        dataPackageIdOrName: str,
+        tableIdOrName: str,
+    ) -> dict:
+        """
+        Delete a staging table from a data package in a beVault project.
+
+        IMPORTANT: You must first delete all mappings in the staging table before
+        deleting it. Use the delete_staging_table_mapping tool to remove each mapping.
+        If the staging table has any mappings (Hub, Link, or Satellite), the delete
+        operation will fail.
+
+        Args:
+            projectName: Name of the project (will be resolved to project ID)
+            sourceSystemIdOrName: ID (GUID) or name of the source system
+            dataPackageIdOrName: ID (GUID) or name of the data package
+            tableIdOrName: ID (GUID) or name of the staging table to delete
+
+        Returns:
+            A confirmation message as a dictionary.
+        """
+        try:
+            logger.info(
+                "delete_staging_table: projectName=%s, sourceSystemIdOrName=%s, dataPackageIdOrName=%s, tableIdOrName=%s",
+                projectName,
+                sourceSystemIdOrName,
+                dataPackageIdOrName,
+                tableIdOrName,
+            )
+
+            # Get project ID from project name
+            project_id = client.projects.get_by_name(projectName)
+            logger.debug(
+                "Found project ID: %s for project: %s", project_id, projectName
+            )
+
+            # Delete the staging table
+            client.source_systems.delete_staging_table(
+                project_id,
+                sourceSystemIdOrName,
+                dataPackageIdOrName,
+                tableIdOrName,
+            )
+
+            return {"message": f"Staging table '{tableIdOrName}' deleted successfully"}
+        except Exception:  # noqa: BLE001
+            logger.exception("delete_staging_table failed")
+            raise
