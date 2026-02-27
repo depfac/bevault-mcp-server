@@ -38,7 +38,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         4. **Existing table**: Reference an existing table in the stg schema (just provide tableName)
 
         Args:
-            projectName: Name of the project (will be resolved to project ID)
+            projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
             sourceSystemIdOrName: ID (GUID) or name of the source system
             dataPackageIdOrName: ID (GUID) or name of the data package
             tableName: Name of the staging table (mandatory, must be unique)
@@ -139,7 +139,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         Add a column to an existing staging table.
 
         Args:
-            projectName: Name of the project (will be resolved to project ID)
+            projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
             sourceSystemIdOrName: ID (GUID) or name of the source system
             dataPackageIdOrName: ID (GUID) or name of the data package
             tableIdOrName: ID (GUID) or name of the staging table
@@ -220,7 +220,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         Update a column in a staging table.
 
         Args:
-            projectName: Name of the project (will be resolved to project ID)
+            projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
             sourceSystemIdOrName: ID (GUID) or name of the source system
             dataPackageIdOrName: ID (GUID) or name of the data package
             columnId: ID (GUID) of the column to update
@@ -295,7 +295,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         Get information about a staging table including its columns and mappings.
 
         Args:
-            projectName: Name of the project (will be resolved to project ID)
+            projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
             sourceSystemIdOrName: ID (GUID) or name of the source system
             dataPackageIdOrName: ID (GUID) or name of the data package
             tableId: ID (GUID) of the staging table
@@ -560,7 +560,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         Delete a column from a staging table.
 
         Args:
-            projectName: Name of the project (will be resolved to project ID)
+            projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
             sourceSystemIdOrName: ID (GUID) or name of the source system
             dataPackageIdOrName: ID (GUID) or name of the data package
             columnId: ID (GUID) of the column to delete
@@ -610,7 +610,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         operation will fail.
 
         Args:
-            projectName: Name of the project (will be resolved to project ID)
+            projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
             sourceSystemIdOrName: ID (GUID) or name of the source system
             dataPackageIdOrName: ID (GUID) or name of the data package
             tableIdOrName: ID (GUID) or name of the staging table to delete

@@ -12,6 +12,17 @@ class ProjectsClient(BaseClient):
     """Client for project-related operations."""
 
     @BaseClient._retry_decorator()
+    def get_projects(self) -> ProjectsResponse:
+        """Get list of projects the user has explicit read rights on (onlyAffected=true)."""
+        query = {"onlyAffected": True}
+        path = "/metavault/api/projects"
+        logger.debug("GET %s params=%s", path, query)
+        resp = self._client.get(path, params=query, headers=self._get_auth_headers())
+        resp.raise_for_status()
+        data = resp.json()
+        return ProjectsResponse.model_validate(data)
+
+    @BaseClient._retry_decorator()
     def get_by_name(self, project_name: str) -> str:
         """Get project ID by project name. Returns the ID of the first matching project."""
         query = {"filter": f"name eq {project_name}"}

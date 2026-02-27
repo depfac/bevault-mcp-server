@@ -33,7 +33,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         Create a source system in a beVault project.
 
         Args:
-            projectName: Name of the project (will be resolved to project ID)
+            projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
             name: Name of the source system (mandatory, must be unique)
             code: Code of the source system (mandatory)
             version: Version of the source system (optional)
@@ -96,7 +96,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         Create a data package in a source system within a beVault project.
 
         Args:
-            projectName: Name of the project (will be resolved to project ID)
+            projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
             sourceSystemName: Name or ID of the source system
             name: Name of the data package (mandatory, must be unique)
             deliverySchedule: Delivery schedule of the data package (optional)
@@ -157,7 +157,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         Returns optimized paginated response with paging info and source systems (including their data packages).
 
         Args:
-            projectName: Name of the project (will be resolved to project ID)
+            projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
             contains: Optional filter string - if provided, filters source systems where name contains this value
             index: Pagination index (default: 0)
             limit: Maximum number of results (default: 10)
@@ -283,7 +283,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         Update a source system in a beVault project.
 
         Args:
-            projectName: Name of the project (will be resolved to project ID)
+            projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
             sourceSystemIdOrName: ID (GUID) or name of the source system to update
             name: Name of the source system (mandatory, must be unique)
             code: Code of the source system (mandatory)
@@ -346,7 +346,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         deleting it. Use the delete_data_package tool to remove the data packages.
 
         Args:
-            projectName: Name of the project (will be resolved to project ID)
+            projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
             sourceSystemIdOrName: ID (GUID) or name of the source system to delete
 
         Returns:
@@ -393,7 +393,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         Update a data package in a source system within a beVault project.
 
         Args:
-            projectName: Name of the project (will be resolved to project ID)
+            projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
             sourceSystemIdOrName: ID (GUID) or name of the source system
             dataPackageIdOrName: ID (GUID) or name of the data package to update
             name: Name of the data package (mandatory, must be unique)
@@ -460,7 +460,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         deleting it. Use the delete_staging_table tool to remove the staging tables.
 
         Args:
-            projectName: Name of the project (will be resolved to project ID)
+            projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
             sourceSystemIdOrName: ID (GUID) or name of the source system
             dataPackageIdOrName: ID (GUID) or name of the data package to delete
 

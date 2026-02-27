@@ -126,7 +126,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
     ) -> dict:
         """
         Search entities in beVault model (Hubs, Links, Satellites, ReferenceTables).
-        The projectName is mandatory and should be unquoted and is case sensitive.
+        The projectName is the technical name of the project (use technicalName from get_projects); mandatory, unquoted, case sensitive.
         Returns optimized paginated response with paging info and entities (mappings removed, business key simplified, parent names for satellites).
         """
         try:
