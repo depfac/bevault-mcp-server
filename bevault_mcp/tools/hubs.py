@@ -124,6 +124,9 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         """
         Delete a hub from a beVault project.
 
+        IMPORTANT: You must first delete all links referencing the hub before
+        deleting it. Use the delete_link tool to remove the links.
+
         Args:
             projectName: Name of the project (will be resolved to project ID)
             hubIdOrName: ID (GUID) or name of the hub to delete

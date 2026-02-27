@@ -342,6 +342,9 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         """
         Delete a source system from a beVault project.
 
+        IMPORTANT: You must first delete all data packages in the source system before
+        deleting it. Use the delete_data_package tool to remove the data packages.
+
         Args:
             projectName: Name of the project (will be resolved to project ID)
             sourceSystemIdOrName: ID (GUID) or name of the source system to delete
@@ -452,6 +455,9 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
     ) -> dict:
         """
         Delete a data package from a source system in a beVault project.
+
+        IMPORTANT: You must first delete all staging tables in the data package before
+        deleting it. Use the delete_staging_table tool to remove the staging tables.
 
         Args:
             projectName: Name of the project (will be resolved to project ID)

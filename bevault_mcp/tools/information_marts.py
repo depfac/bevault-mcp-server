@@ -671,6 +671,9 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         """
         Delete an information mart from a beVault project.
 
+        IMPORTANT: You must first delete all scripts in the information mart before
+        deleting it. Use the delete_information_mart_script tool to remove the scripts.
+
         Args:
             projectName: Name of the project (will be resolved to project ID)
             informationMartIdOrName: ID (GUID) or name of the information mart to delete
