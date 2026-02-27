@@ -129,6 +129,22 @@ SENTRY_DEFAULTTAGS__deployment=prod
 | `SENTRY_SERVER_NAME` | — | Server instance identifier |
 | `SENTRY_DEFAULTTAGS__[key]` | — | Default tags, e.g. `SENTRY_DEFAULTTAGS__service=bevault-mcp` |
 
+### OpenTelemetry Tracing
+
+OpenTelemetry tracing is optional. When `OTEL_EXPORTER_OTLP_ENDPOINT` is set, the server exports traces to an OTLP collector. Compatible with Jaeger, Zipkin, Grafana Tempo, Datadog, and other OTLP backends.
+
+```ini
+# OpenTelemetry (optional - unset or leave empty to disable)
+OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
+OTEL_SERVICE_NAME=bevault-mcp
+OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+```
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | — | OTLP collector endpoint; required to enable tracing |
+| `OTEL_SERVICE_NAME` | `bevault-mcp` | Service name in traces |
+
 ### Authentication
 
 Authentication with beVault is handled via the `bevault-api-key` header passed from the MCP client. When configuring your MCP client, you need to:
