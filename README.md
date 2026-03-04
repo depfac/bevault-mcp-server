@@ -1,5 +1,25 @@
 # bevault-mcp
 
+## Table of Contents
+
+- [Introduction](#introduction)
+- [Features](#features)
+- [Installation](#installation)
+  - [Development Setup](#development-setup)
+  - [Production Setup](#production-setup)
+- [Configuration](#configuration)
+  - [Environment Variables](#environment-variables)
+  - [Sentry Monitoring](#sentry-monitoring)
+  - [OpenTelemetry Tracing](#opentelemetry-tracing)
+  - [Authentication](#authentication)
+  - [OIDC Configuration](#oidc-configuration)
+  - [CORS for Browser-Based OIDC Clients](#cors-for-browser-based-oidc-clients)
+- [Run](#run)
+- [Using with n8n](#using-with-n8n)
+- [Development](#development)
+- [Contributing](#contributing)
+- [License](#license)
+
 ## Introduction
 
 This is the MCP (Model Context Protocol) server for [beVault](https://www.bevault.io/), a modern data platform designed to manage scalable, secure, and auditable data using Data Vault methodology.
@@ -102,6 +122,7 @@ MCP_PORT=8000
 **Optional Variables:**
 - `MCP_HOST`: The host address on which the MCP server will run (optional, default: `0.0.0.0`)
 - `MCP_PORT`: The port on which the MCP server will run (optional, default: `8000`)
+- `CORS_ORIGINS`: Comma-separated allowed origins for CORS (optional; required for browser-based OIDC clients—see [CORS for Browser-Based OIDC Clients](#cors-for-browser-based-oidc-clients))
 
 ### Sentry Monitoring
 
@@ -147,7 +168,11 @@ OTEL_EXPORTER_OTLP_PROTOCOL=grpc
 
 ### Authentication
 
-Authentication with beVault is handled via the `bevault-api-key` header passed from the MCP client. When configuring your MCP client, you need to:
+The MCP server supports two authentication modes. The mode is determined by whether OIDC environment variables are set.
+
+#### API Key Mode (default)
+
+When OIDC variables are **not** configured, the MCP server requires the `bevault-api-key` header. All requests use a single beVault API token, and **all users inherit the rights of that API key**.
 
 1. **Create an API token** in beVault following the [beVault API Keys documentation](https://support.bevault.io/en/bevault-documentation/current-version/reference-guide/datafactory-user-reference-guide/datafactory-modules/client-admin/api-keys)
 
@@ -157,9 +182,56 @@ Authentication with beVault is handled via the `bevault-api-key` header passed f
    ```
    Replace `[your-api-token]` with the actual API token you created.
 
-3. The MCP server will forward this token to beVault's API for authentication.
+3. The MCP server forwards this token to beVault's API for authentication.
 
 **Important**: The permissions and project access assigned to your API token determine what operations the MCP server can perform. Make sure to configure the API key with appropriate rights for the projects and modules you need to access.
+
+#### OIDC Mode
+
+When OIDC variables are configured, the MCP server uses your OIDC provider for authentication. **End users are asked to authenticate themselves**, and each user inherits **beVault's rights of the authenticated user**. The MCP server and beVault must use the same OIDC provider so that the Bearer token issued for the MCP server is also accepted by beVault.
+
+Configure the following environment variables (see [OIDC configuration](#oidc-configuration) below). The MCP client will direct users through the OIDC flow; after authentication, the Bearer token is sent on each request and forwarded to beVault.
+
+For **browser-based clients** (e.g., web apps using the MCP server), configure `CORS_ORIGINS` so the OIDC redirect flow can complete. See [CORS for Browser-Based OIDC Clients](#cors-for-browser-based-oidc-clients).
+
+### OIDC Configuration
+
+When all required OIDC variables are set, OIDC authentication is enabled. Leave them unset to use API key mode.
+
+```ini
+# OIDC (optional - unset or leave empty to use bevault-api-key instead)
+OIDC_CONFIG_URL=https://your-oidc-provider.com/.well-known/openid-configuration
+OIDC_CLIENT_ID=your-client-id
+OIDC_CLIENT_SECRET=your-client-secret
+OIDC_BASE_URL=https://your-mcp-server.domain.com
+OIDC_AUDIENCE=optional-audience
+OIDC_REDIRECT_PATH=/optional-redirect-path
+OIDC_REQUIRED_SCOPES=openid,profile
+```
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `OIDC_CONFIG_URL` | Yes* | OpenID Connect discovery URL (e.g. `/.well-known/openid-configuration`) |
+| `OIDC_CLIENT_ID` | Yes* | OAuth client ID registered with the OIDC provider |
+| `OIDC_CLIENT_SECRET` | Yes* | OAuth client secret |
+| `OIDC_BASE_URL` | Yes* | Public URL of this MCP server (used for OAuth redirects) |
+| `OIDC_AUDIENCE` | No | Token audience if required by your provider |
+| `OIDC_REDIRECT_PATH` | No | Custom OAuth redirect path |
+| `OIDC_REQUIRED_SCOPES` | No | Comma-separated scopes (e.g. `openid,profile`) |
+
+\*All four (`OIDC_CONFIG_URL`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET`, `OIDC_BASE_URL`) must be set for OIDC to be enabled.
+
+### CORS for Browser-Based OIDC Clients
+
+When using OIDC with browser-based MCP clients (e.g., web UIs that connect to this server), the OAuth redirect flow requires CORS to be configured. Set `CORS_ORIGINS` to the origin(s) of your client application:
+
+```ini
+CORS_ORIGINS=https://your-web-app.domain.com,https://another-origin.com
+```
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `CORS_ORIGINS` | — | Comma-separated list of allowed origins (e.g. `https://app.example.com`). When set, CORS middleware is enabled with `Authorization` and `Content-Type` in allowed headers. Required for browser-based OIDC clients. |
 
 ## Run
 
