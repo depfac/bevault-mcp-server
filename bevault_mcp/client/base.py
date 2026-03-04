@@ -4,7 +4,7 @@ import logging
 from typing import Dict
 
 import httpx
-from fastmcp.server.dependencies import get_http_headers
+from fastmcp.server.dependencies import get_access_token, get_http_headers
 from tenacity import (
     retry,
     retry_if_exception_type,
@@ -25,9 +25,21 @@ class BaseClient:
         self._client = http_client
 
     def _get_auth_headers(self) -> Dict[str, str]:
-        """Get headers with Authorization from HTTP request using FastMCP's get_http_headers()."""
-        headers = get_http_headers()
-        auth_header = headers.get("authorization") or headers.get("Authorization") or headers.get("bevault-api-key")
+        """Get headers with Authorization for beVault API calls.
+
+        Uses get_access_token() when OIDC is configured—the auth header is stripped
+        by get_http_headers() by default, but the validated token is available
+        from the auth context. Falls back to headers (bevault-api-key) when no
+        OIDC token is present.
+        """
+        # OIDC path: token from auth middleware (request.scope["user"])
+        access_token = get_access_token()
+        if access_token is not None and access_token.token:
+            return {"Authorization": f"Bearer {access_token.token}"}
+
+        # Fallback: bevault-api-key or authorization (when explicitly included)
+        headers = get_http_headers(include={"authorization", "bevault-api-key"})
+        auth_header = headers.get("authorization") or headers.get("bevault-api-key")
         if auth_header:
             return {"Authorization": auth_header}
         return {}
