@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.0](https://github.com/depfac/bevault-mcp-server/compare/v2.1.0...v2.2.0) (2026-03-04)
+
+
+### Features
+
+* add support for OIDC authentication ([7a971dc](https://github.com/depfac/bevault-mcp-server/commit/7a971dcf4709c50c91ea1565c228a657829225d5))
+
 ## [2.1.0](https://github.com/depfac/bevault-mcp-server/compare/v2.0.0...v2.1.0) (2026-02-27)
 
 
