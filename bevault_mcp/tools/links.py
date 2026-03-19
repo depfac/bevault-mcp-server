@@ -27,7 +27,7 @@ def _process_hub_references(
                 )
             # Get hub by name to get its ID
             hub_name = ref["hubName"]
-            hub_entity = client.model.get_hub_by_name(project_id, hub_name)
+            hub_entity = client.model.get_hub(project_id, hub_name)
             # Construct hub URL
             hub_url = client.model.construct_hub_url(project_id, hub_entity.id)
             hub_refs.append(
@@ -146,7 +146,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
             logger.debug(
                 "Found project ID: %s for project: %s", project_id, projectName
             )
-            link_entity = client.model.get_link_by_id(project_id, linkIdOrName)
+            link_entity = client.model.get_link(project_id, linkIdOrName)
 
             # Return the link entity as a dictionary
             return link_entity.model_dump(mode="json", exclude_none=True)

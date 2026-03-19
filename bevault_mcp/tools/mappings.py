@@ -574,7 +574,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
             )
 
             # Get link entity to access embedded hub references, dependent children, and data columns
-            link_entity = client.model.get_link_by_id(project_id, linkIdOrName)
+            link_entity = client.model.get_link(project_id, linkIdOrName)
             link_id = link_entity.id
             logger.debug("Found link ID: %s for link: %s", link_id, linkIdOrName)
 
@@ -843,8 +843,8 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         The mapping type (Hub, Link, or Satellite) is automatically determined.
         For satellite mappings, the parent mapping is found to determine the correct delete path.
 
-        IMPORTANT: 
-            To delete a link mapping, you must first delete all satellites mappings using the link mapping. 
+        IMPORTANT:
+            To delete a link mapping, you must first delete all satellites mappings using the link mapping.
             To delete a hub mapping, you must first delete all satellites and link mappings using the hub mapping.
 
         Args:

@@ -1,12 +1,9 @@
 """Mappings client."""
 
-import logging
 from typing import List
 
 from ..models.api.entities.mapping import HubMapping, LinkMapping, SatelliteMapping
 from .base import BaseClient
-
-logger = logging.getLogger(__name__)
 
 
 class MappingsClient(BaseClient):
@@ -44,14 +41,7 @@ class MappingsClient(BaseClient):
             "dataPackageTable": data_package_table_url,
             "dataPackageColumn": data_package_column_url,
         }
-        logger.debug("POST %s body=%s", path, payload)
-        resp = self._client.post(
-            path,
-            json=payload,
-            headers=self._get_auth_headers(),
-        )
-        resp.raise_for_status()
-        data = resp.json()
+        data = self._post(path, payload)
         return HubMapping.model_validate(data)
 
     @BaseClient._retry_decorator()
@@ -95,16 +85,7 @@ class MappingsClient(BaseClient):
         if link_mapping_data_columns:
             payload["linkMappingDataColumns"] = link_mapping_data_columns
 
-        logger.debug("POST %s body=%s", path, payload)
-        headers = self._get_auth_headers()
-        logger.debug("Headers: %s", headers)
-        resp = self._client.post(
-            path,
-            json=payload,
-            headers=self._get_auth_headers(),
-        )
-        resp.raise_for_status()
-        data = resp.json()
+        data = self._post(path, payload)
         return LinkMapping.model_validate(data)
 
     @BaseClient._retry_decorator()
@@ -150,14 +131,7 @@ class MappingsClient(BaseClient):
         if sub_sequence_column_url:
             payload["subSequenceColumn"] = sub_sequence_column_url
 
-        logger.debug("POST %s body=%s", path, payload)
-        resp = self._client.post(
-            path,
-            json=payload,
-            headers=self._get_auth_headers(),
-        )
-        resp.raise_for_status()
-        data = resp.json()
+        data = self._post(path, payload)
         return SatelliteMapping.model_validate(data)
 
     @BaseClient._retry_decorator()
@@ -205,14 +179,7 @@ class MappingsClient(BaseClient):
         if sub_sequence_column_url:
             payload["subSequenceColumn"] = sub_sequence_column_url
 
-        logger.debug("PUT %s body=%s", path, payload)
-        resp = self._client.put(
-            path,
-            json=payload,
-            headers=self._get_auth_headers(),
-        )
-        resp.raise_for_status()
-        data = resp.json()
+        data = self._put(path, payload)
         return SatelliteMapping.model_validate(data)
 
     @BaseClient._retry_decorator()
@@ -224,6 +191,4 @@ class MappingsClient(BaseClient):
             project_id: Project ID
             path: Full API path to the mapping (e.g., "/metavault/api/projects/{project_id}/mappings/hubs/{mappingId}")
         """
-        logger.debug("DELETE %s", path)
-        resp = self._client.delete(path, headers=self._get_auth_headers())
-        resp.raise_for_status()
+        self._delete(path)

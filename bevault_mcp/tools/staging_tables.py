@@ -359,7 +359,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
                     # Fetch Link entity if not already cached
                     if mapping.linkId not in link_entities:
                         try:
-                            link_entity = client.model.get_link_by_id(
+                            link_entity = client.model.get_link(
                                 project_id, mapping.linkId
                             )
                             link_entities[mapping.linkId] = link_entity

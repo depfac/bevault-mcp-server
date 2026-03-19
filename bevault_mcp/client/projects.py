@@ -16,10 +16,7 @@ class ProjectsClient(BaseClient):
         """Get list of projects the user has explicit read rights on (onlyAffected=true)."""
         query = {"onlyAffected": True}
         path = "/metavault/api/projects"
-        logger.debug("GET %s params=%s", path, query)
-        resp = self._client.get(path, params=query, headers=self._get_auth_headers())
-        resp.raise_for_status()
-        data = resp.json()
+        data = self._get(path, params=query)
         return ProjectsResponse.model_validate(data)
 
     @BaseClient._retry_decorator()
@@ -27,10 +24,7 @@ class ProjectsClient(BaseClient):
         """Get project ID by project name. Returns the ID of the first matching project."""
         query = {"filter": f"name eq {project_name}"}
         path = "/metavault/api/projects"
-        logger.debug("GET %s params=%s", path, query)
-        resp = self._client.get(path, params=query, headers=self._get_auth_headers())
-        resp.raise_for_status()
-        data = resp.json()
+        data = self._get(path, params=query)
         projects_response = ProjectsResponse.model_validate(data)
         if projects_response.total == 0:
             raise ValueError(f"Project '{project_name}' not found")
