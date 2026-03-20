@@ -1,13 +1,17 @@
 """Satellite entity model."""
 
-from typing import Any, List, Literal, Optional, Union
+from __future__ import annotations
 
-from pydantic import Field, model_validator
+from typing import TYPE_CHECKING, Any, List, Literal, Optional, Union
+
+from pydantic import model_validator
 
 from ..base import BeVaultEntity
 from .base_model_entity import BaseModelEntity
-from .hub import Hub
-from .link import Link
+
+if TYPE_CHECKING:
+    from .hub import Hub
+    from .link import Link
 
 
 class SatelliteColumn(BeVaultEntity):
@@ -35,7 +39,7 @@ class Satellite(BaseModelEntity):
     mappingCount: Optional[int] = None
     displayName: Optional[str] = None
     subSequenceColumn: Optional[SatelliteColumn] = None
-    columns: List[SatelliteColumn] = Field(default_factory=list)
+    columns: Optional[List[SatelliteColumn]] = None
     parent: Optional[Union["Hub", "Link"]] = None
 
     @model_validator(mode="before")
@@ -48,7 +52,7 @@ class Satellite(BaseModelEntity):
         result = data.copy()
 
         # Parse columns and parent from _embedded structure
-        columns = []
+        columns = None
         parent = None
         if "_embedded" in result:
             embedded = result.get("_embedded", {})

@@ -46,6 +46,20 @@ def parse_embedded_resource(
     return []
 
 
+def strip_columns_from_satellites(satellites: List[Any]) -> List[Any]:
+    """
+    Remove columns and _embedded from satellite dicts to reduce payload size.
+
+    When satellites are embedded in Hub/Link responses, they may include full
+    column definitions. This strips them to avoid huge payloads.
+    """
+    for item in satellites:
+        if isinstance(item, dict):
+            item.pop("columns", None)
+            item.pop("_embedded", None)
+    return satellites
+
+
 def parse_embedded_resources(
     data: dict[str, Any],
     resource_mappings: dict[str, str],

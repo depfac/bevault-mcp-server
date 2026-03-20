@@ -5,9 +5,10 @@ from typing import Any, List, Literal, Optional
 from pydantic import Field, model_validator
 
 from ..base import BeVaultEntity
-from ..embedded import parse_embedded_resource
+from ..embedded import parse_embedded_resource, strip_columns_from_satellites
 from .base_model_entity import BaseModelEntity
 from .pit_table import PitTable
+from .satellite import Satellite
 
 
 class HubReference(BeVaultEntity):
@@ -51,6 +52,7 @@ class Link(BaseModelEntity):
     dependentChildColumns: List[DependentChildColumn] = Field(default_factory=list)
     dataColumns: List[DataColumn] = Field(default_factory=list)
     pitTables: Optional[List[PitTable]] = None
+    satellites: Optional[List[Satellite]] = None
 
     @model_validator(mode="before")
     @classmethod
@@ -62,6 +64,9 @@ class Link(BaseModelEntity):
         result = data.copy()
         result["hubReferences"] = parse_embedded_resource(result, "hubReferences")
         result["pitTables"] = parse_embedded_resource(result, "pitTables")
+        satellites = parse_embedded_resource(result, "satellites")
+        strip_columns_from_satellites(satellites)
+        result["satellites"] = satellites
 
         # dependentChildColumns and dataColumns are already on the Link object
         if "dependentChildColumns" not in result:

@@ -4,9 +4,10 @@ from typing import Any, List, Literal, Optional
 
 from pydantic import BaseModel, model_validator
 
-from ..embedded import parse_embedded_resource
+from ..embedded import parse_embedded_resource, strip_columns_from_satellites
 from .base_model_entity import BaseModelEntity
 from .pit_table import PitTable
+from .satellite import Satellite
 
 
 class BusinessKey(BaseModel):
@@ -26,6 +27,7 @@ class Hub(BaseModelEntity):
     dependentLinkCount: Optional[int] = None
     businessKey: Optional[BusinessKey] = None
     pitTables: Optional[List[PitTable]] = None
+    satellites: Optional[List[Satellite]] = None
 
     @model_validator(mode="before")
     @classmethod
@@ -36,4 +38,7 @@ class Hub(BaseModelEntity):
 
         result = data.copy()
         result["pitTables"] = parse_embedded_resource(result, "pitTables")
+        satellites = parse_embedded_resource(result, "satellites")
+        strip_columns_from_satellites(satellites)
+        result["satellites"] = satellites
         return result

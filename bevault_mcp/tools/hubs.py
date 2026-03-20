@@ -121,6 +121,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         projectName: str,
         hubIdOrName: str,
         includePitTables: bool = False,
+        includeSatellites: bool = False,
     ) -> dict:
         """
         Get hub details by project name and hub ID or name.
@@ -129,17 +130,20 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
             projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
             hubIdOrName: ID (GUID) or name of the hub
             includePitTables: If True, fetches and includes pit tables in the response (default: False)
+            includeSatellites: If True, fetches and includes satellites in the response (default: False)
 
         Returns:
             The hub entity as a dictionary with all details. When includePitTables is True,
-            the response includes a pitTables array with pit table details.
+            the response includes a pitTables array. When includeSatellites is True,
+            the response includes a satellites array.
         """
         try:
             logger.info(
-                "get_hub: projectName=%s, hubIdOrName=%s, includePitTables=%s",
+                "get_hub: projectName=%s, hubIdOrName=%s, includePitTables=%s, includeSatellites=%s",
                 projectName,
                 hubIdOrName,
                 includePitTables,
+                includeSatellites,
             )
 
             # Get project ID from project name
@@ -148,8 +152,14 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
                 "Found project ID: %s for project: %s", project_id, projectName
             )
 
-            expand = ["pitTables"] if includePitTables else None
-            hub_entity = client.model.get_hub(project_id, hubIdOrName, expand=expand)
+            expand = []
+            if includePitTables:
+                expand.append("pitTables")
+            if includeSatellites:
+                expand.append("satellites")
+            hub_entity = client.model.get_hub(
+                project_id, hubIdOrName, expand=expand if expand else None
+            )
 
             # Return the hub entity as a dictionary
             return hub_entity.model_dump(mode="json", exclude_none=True)
