@@ -2,7 +2,6 @@ import logging
 import os
 from pathlib import Path
 
-import uvicorn
 from fastmcp import FastMCP
 from fastmcp.server.auth.oidc_proxy import OIDCProxy
 from fastmcp.utilities.types import Image
@@ -27,7 +26,7 @@ def create_mcp_server() -> FastMCP:
     oidc_config = settings.get_oidc_config()
     auth = None
     if oidc_config is not None:
-        oidc_kwargs: dict={
+        oidc_kwargs: dict = {
             "config_url": oidc_config.config_url,
             "client_id": oidc_config.client_id,
             "client_secret": oidc_config.client_secret,
@@ -44,21 +43,20 @@ def create_mcp_server() -> FastMCP:
     else:
         logger.info("Authentication mode: bevault-api-key header (OIDC not configured)")
 
-
     icon_path = Path(__file__).resolve().parent / "assets" / "badge-color.svg"
     icon = Icon(
         src=Image(path=str(icon_path)).to_data_uri(),
         mimeType="image/svg+xml",
         sizes=["48x48"],
     )
-    mcp_kwargs: dict={
+    mcp_kwargs: dict = {
         "website_url": "https://github.com/depfac/bevault-mcp-server",
         "icons": [icon],
     }
     if auth is not None:
         mcp_kwargs["auth"] = auth
 
-    mcp = FastMCP("bevault-mcp",**mcp_kwargs)
+    mcp = FastMCP("bevault-mcp", **mcp_kwargs)
     client = BeVaultClient(settings)
 
     # Register all tools with FastMCP
@@ -95,12 +93,12 @@ def run() -> None:
                     expose_headers=["mcp-session-id"],
                 )
             ]
-            app = mcp.http_app(middleware=middleware)
+            mcp.http_app(middleware=middleware)
             logger.info("CORS enabled for origins: %s", allow_origins)
         else:
-            app = mcp.http_app()
+            mcp.http_app()
     else:
-        app = mcp.http_app()
+        mcp.http_app()
 
     host = os.getenv("MCP_HOST", "0.0.0.0")
     port = int(os.getenv("MCP_PORT", "8000"))
@@ -113,4 +111,7 @@ def run() -> None:
 
 
 if __name__ == "__main__":
-    run()
+    try:
+        run()
+    except KeyboardInterrupt:
+        pass  # Clean exit on Ctrl+C
