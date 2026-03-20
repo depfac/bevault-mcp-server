@@ -44,13 +44,21 @@ class BaseClient:
             return {"Authorization": auth_header}
         return {}
 
-    def _get(self, path: str, params: Optional[Dict[str, Any]] = None) -> dict:
+    def _get(
+        self,
+        path: str,
+        params: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, str]] = None,
+    ) -> dict:
         """GET path with auth; raise for status; return JSON."""
         if params is not None:
             logger.debug("GET %s params=%s", path, params)
         else:
             logger.debug("GET %s", path)
-        resp = self._client.get(path, params=params, headers=self._get_auth_headers())
+        h = self._get_auth_headers()
+        if headers:
+            h = {**h, **headers}
+        resp = self._client.get(path, params=params, headers=h)
         resp.raise_for_status()
         return resp.json()
 

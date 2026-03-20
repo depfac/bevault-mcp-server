@@ -7,6 +7,7 @@ from pydantic import BaseModel
 from ..models import (
     Hub,
     Link,
+    PitTable,
     Satellite,
     SearchParams,
     SearchResponse,
@@ -46,10 +47,26 @@ class ModelClient(BaseClient):
         return self._create_entity(path, body, Hub)
 
     @BaseClient._retry_decorator()
-    def get_hub(self, project_id: str, hub_id_or_name: str) -> Hub:
-        """Get hub by ID or name in a project. Returns the hub entity."""
+    def get_hub(
+        self,
+        project_id: str,
+        hub_id_or_name: str,
+        expand: list[str] | None = None,
+    ) -> Hub:
+        """Get hub by ID or name in a project. Returns the hub entity.
+
+        Args:
+            project_id: Project ID
+            hub_id_or_name: Hub ID or name
+            expand: Optional list of links to expand (e.g. ["pitTables"] for embedded pit tables)
+        """
         path = f"/metavault/api/projects/{project_id}/model/hubs/{hub_id_or_name}"
-        data = self._get(path)
+        params = None
+        headers = None
+        if expand:
+            params = {"expand": ",".join(expand)}
+            headers = {"Accept": "application/hal+json"}
+        data = self._get(path, params=params, headers=headers)
         return Hub.model_validate(data)
 
     def construct_hub_url(self, project_id: str, hub_id: str) -> str:
@@ -58,10 +75,26 @@ class ModelClient(BaseClient):
         return f"{base_url}/metavault/api/projects/{project_id}/model/hubs/{hub_id}"
 
     @BaseClient._retry_decorator()
-    def get_link(self, project_id: str, link_id_or_name: str) -> Link:
-        """Get link by ID or name in a project. Returns the link entity."""
+    def get_link(
+        self,
+        project_id: str,
+        link_id_or_name: str,
+        expand: list[str] | None = None,
+    ) -> Link:
+        """Get link by ID or name in a project. Returns the link entity.
+
+        Args:
+            project_id: Project ID
+            link_id_or_name: Link ID or name
+            expand: Optional list of links to expand (e.g. ["pitTables"] for embedded pit tables)
+        """
         path = f"/metavault/api/projects/{project_id}/model/links/{link_id_or_name}"
-        data = self._get(path)
+        params = None
+        headers = None
+        if expand:
+            params = {"expand": ",".join(expand)}
+            headers = {"Accept": "application/hal+json"}
+        data = self._get(path, params=params, headers=headers)
         return Link.model_validate(data)
 
     def _resolve_id(
@@ -168,3 +201,54 @@ class ModelClient(BaseClient):
         query = {"expand": "parent"}
         data = self._get(path, params=query)
         return Satellite.model_validate(data)
+
+    def _resolve_parent_id(
+        self, project_id: str, parent_type: str, parent_id_or_name: str
+    ) -> str:
+        """Resolve parent (hub or link) ID from ID or name."""
+        if parent_type == "hub":
+            return self._resolve_hub_id(project_id, parent_id_or_name)
+        if parent_type == "link":
+            return self._resolve_link_id(project_id, parent_id_or_name)
+        raise ValueError(
+            f"Invalid parent_type '{parent_type}'. Must be 'hub' or 'link'"
+        )
+
+    @BaseClient._retry_decorator()
+    def create_pit_table(
+        self,
+        project_id: str,
+        parent_type: str,
+        parent_id_or_name: str,
+        snapshot_id: str,
+        description: str | None = None,
+    ) -> PitTable:
+        """Create a pit table for a hub or link. Satellites are attached automatically by beVault."""
+        if parent_type not in ("hub", "link"):
+            raise ValueError(
+                f"Invalid parent_type '{parent_type}'. Must be 'hub' or 'link'"
+            )
+        parent_id = self._resolve_parent_id(project_id, parent_type, parent_id_or_name)
+        path = f"/metavault/api/projects/{project_id}/model/{parent_type}s/{parent_id}/pit_tables"
+        body: dict[str, str] = {"snapshotId": snapshot_id}
+        if description is not None:
+            body["description"] = description
+        data = self._post(path, body)
+        return PitTable.model_validate(data)
+
+    @BaseClient._retry_decorator()
+    def delete_pit_table(
+        self,
+        project_id: str,
+        parent_type: str,
+        parent_id_or_name: str,
+        pit_table_id: str,
+    ) -> None:
+        """Delete a pit table from a hub or link."""
+        if parent_type not in ("hub", "link"):
+            raise ValueError(
+                f"Invalid parent_type '{parent_type}'. Must be 'hub' or 'link'"
+            )
+        parent_id = self._resolve_parent_id(project_id, parent_type, parent_id_or_name)
+        path = f"/metavault/api/projects/{project_id}/model/{parent_type}s/{parent_id}/pit_tables/{pit_table_id}"
+        self._delete_entity(path)

@@ -124,6 +124,7 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
     def get_link(
         projectName: str,
         linkIdOrName: str,
+        includePitTables: bool = False,
     ) -> dict:
         """
         Get link details by project name and link ID or name.
@@ -131,14 +132,19 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
         Args:
             projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
             linkIdOrName: ID (GUID) or name of the link
+            includePitTables: If True, fetches and includes pit tables in the response (default: False)
 
         Returns:
             The link entity as a dictionary with all details including hub references,
-            dependent child columns, and data columns.
+            dependent child columns, and data columns. When includePitTables is True,
+            the response includes a pitTables array with pit table details.
         """
         try:
             logger.info(
-                "get_link: projectName=%s, linkIdOrName=%s", projectName, linkIdOrName
+                "get_link: projectName=%s, linkIdOrName=%s, includePitTables=%s",
+                projectName,
+                linkIdOrName,
+                includePitTables,
             )
 
             # Get project ID from project name
@@ -146,7 +152,9 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
             logger.debug(
                 "Found project ID: %s for project: %s", project_id, projectName
             )
-            link_entity = client.model.get_link(project_id, linkIdOrName)
+
+            expand = ["pitTables"] if includePitTables else None
+            link_entity = client.model.get_link(project_id, linkIdOrName, expand=expand)
 
             # Return the link entity as a dictionary
             return link_entity.model_dump(mode="json", exclude_none=True)
