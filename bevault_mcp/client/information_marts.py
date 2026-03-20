@@ -1,6 +1,5 @@
 """Information marts client."""
 
-import logging
 from typing import Any, Dict, Optional
 
 from ..models import (
@@ -14,8 +13,6 @@ from ..models import (
 )
 from .base import BaseClient
 from .utils import is_guid
-
-logger = logging.getLogger(__name__)
 
 
 class InformationMartsClient(BaseClient):
@@ -34,10 +31,7 @@ class InformationMartsClient(BaseClient):
         if filter:
             query["filter"] = filter
         path = f"/metavault/api/projects/{project_id}/informationmarts"
-        logger.debug("GET %s params=%s", path, query)
-        resp = self._client.get(path, params=query, headers=self._get_auth_headers())
-        resp.raise_for_status()
-        data = resp.json()
+        data = self._get(path, params=query)
         return InformationMartsResponse.model_validate(data)
 
     @BaseClient._retry_decorator()
@@ -46,10 +40,7 @@ class InformationMartsClient(BaseClient):
     ) -> InformationMart:
         """Get information mart by ID in a project. Returns the information mart entity."""
         path = f"/metavault/api/projects/{project_id}/informationmarts/{information_mart_id}"
-        logger.debug("GET %s", path)
-        resp = self._client.get(path, headers=self._get_auth_headers())
-        resp.raise_for_status()
-        data = resp.json()
+        data = self._get(path)
         return InformationMart.model_validate(data)
 
     def _resolve_information_mart_id(
@@ -105,10 +96,7 @@ class InformationMartsClient(BaseClient):
     ) -> InformationMartScript:
         """Get a script by ID in an information mart. Returns the script entity with full metadata."""
         path = f"/metavault/api/projects/{project_id}/informationmarts/{information_mart_id}/scripts/{script_id}"
-        logger.debug("GET %s", path)
-        resp = self._client.get(path, headers=self._get_auth_headers())
-        resp.raise_for_status()
-        data = resp.json()
+        data = self._get(path)
         return InformationMartScript.model_validate(data)
 
     @BaseClient._retry_decorator()
@@ -118,10 +106,7 @@ class InformationMartsClient(BaseClient):
         """Get snapshots for a project. Returns paginated list of snapshots."""
         query: Dict[str, Any] = {"index": index, "limit": limit}
         path = f"/metavault/api/projects/{project_id}/model/snapshots"
-        logger.debug("GET %s params=%s", path, query)
-        resp = self._client.get(path, params=query, headers=self._get_auth_headers())
-        resp.raise_for_status()
-        data = resp.json()
+        data = self._get(path, params=query)
         return SnapshotsResponse.model_validate(data)
 
     def _resolve_snapshot_id(self, project_id: str, snapshot_id_or_name: str) -> str:
@@ -141,16 +126,8 @@ class InformationMartsClient(BaseClient):
     ) -> InformationMart:
         """Create an information mart in a project. Returns the created information mart entity."""
         path = f"/metavault/api/projects/{project_id}/informationmarts"
-        logger.debug(
-            "POST %s body=%s", path, information_mart_request.model_dump(mode="json")
-        )
-        resp = self._client.post(
-            path,
-            json=information_mart_request.model_dump(mode="json", exclude_none=True),
-            headers=self._get_auth_headers(),
-        )
-        resp.raise_for_status()
-        data = resp.json()
+        body = information_mart_request.model_dump(mode="json", exclude_none=True)
+        data = self._post(path, body)
         return InformationMart.model_validate(data)
 
     @BaseClient._retry_decorator()
@@ -165,16 +142,8 @@ class InformationMartsClient(BaseClient):
             project_id, information_mart_id_or_name
         )
         path = f"/metavault/api/projects/{project_id}/informationmarts/{information_mart_id}"
-        logger.debug(
-            "PUT %s body=%s", path, information_mart_request.model_dump(mode="json")
-        )
-        resp = self._client.put(
-            path,
-            json=information_mart_request.model_dump(mode="json", exclude_none=True),
-            headers=self._get_auth_headers(),
-        )
-        resp.raise_for_status()
-        data = resp.json()
+        body = information_mart_request.model_dump(mode="json", exclude_none=True)
+        data = self._put(path, body)
         return InformationMart.model_validate(data)
 
     @BaseClient._retry_decorator()
@@ -184,9 +153,7 @@ class InformationMartsClient(BaseClient):
             project_id, information_mart_id_or_name
         )
         path = f"/metavault/api/projects/{project_id}/informationmarts/{information_mart_id}"
-        logger.debug("DELETE %s", path)
-        resp = self._client.delete(path, headers=self._get_auth_headers())
-        resp.raise_for_status()
+        self._delete(path)
 
     def _calculate_next_order(self, project_id: str, information_mart_id: str) -> int:
         """Calculate the next order value (max order + 1) for scripts in an information mart."""
@@ -205,14 +172,8 @@ class InformationMartsClient(BaseClient):
     ) -> InformationMartScript:
         """Create a script in an information mart. Returns the created script entity."""
         path = f"/metavault/api/projects/{project_id}/informationmarts/{information_mart_id}/scripts"
-        logger.debug("POST %s body=%s", path, script_request.model_dump(mode="json"))
-        resp = self._client.post(
-            path,
-            json=script_request.model_dump(mode="json", exclude_none=True),
-            headers=self._get_auth_headers(),
-        )
-        resp.raise_for_status()
-        data = resp.json()
+        body = script_request.model_dump(mode="json", exclude_none=True)
+        data = self._post(path, body)
         return InformationMartScript.model_validate(data)
 
     @BaseClient._retry_decorator()
@@ -225,14 +186,8 @@ class InformationMartsClient(BaseClient):
     ) -> InformationMartScript:
         """Update a script's metadata (excluding code) in an information mart. Returns the updated script entity."""
         path = f"/metavault/api/projects/{project_id}/informationmarts/{information_mart_id}/scripts/{script_id}"
-        logger.debug("PUT %s body=%s", path, script_request.model_dump(mode="json"))
-        resp = self._client.put(
-            path,
-            json=script_request.model_dump(mode="json", exclude_none=True),
-            headers=self._get_auth_headers(),
-        )
-        resp.raise_for_status()
-        data = resp.json()
+        body = script_request.model_dump(mode="json", exclude_none=True)
+        data = self._put(path, body)
         return InformationMartScript.model_validate(data)
 
     @BaseClient._retry_decorator()
@@ -253,14 +208,7 @@ class InformationMartsClient(BaseClient):
 
         # Send PUT request with full payload
         path = f"/metavault/api/projects/{project_id}/informationmarts/{information_mart_id}/scripts/{script_id}"
-        logger.debug("PUT %s body=%s (code updated)", path, script_data)
-        resp = self._client.put(
-            path,
-            json=script_data,
-            headers=self._get_auth_headers(),
-        )
-        resp.raise_for_status()
-        data = resp.json()
+        data = self._put(path, script_data)
         return InformationMartScript.model_validate(data)
 
     @BaseClient._retry_decorator()
@@ -272,6 +220,4 @@ class InformationMartsClient(BaseClient):
     ) -> None:
         """Delete a script from an information mart."""
         path = f"/metavault/api/projects/{project_id}/informationmarts/{information_mart_id}/scripts/{script_id}"
-        logger.debug("DELETE %s", path)
-        resp = self._client.delete(path, headers=self._get_auth_headers())
-        resp.raise_for_status()
+        self._delete(path)

@@ -1,7 +1,7 @@
 """Base client with common HTTP functionality."""
 
 import logging
-from typing import Dict
+from typing import Any, Dict, Optional
 
 import httpx
 from fastmcp.server.dependencies import get_access_token, get_http_headers
@@ -43,6 +43,44 @@ class BaseClient:
         if auth_header:
             return {"Authorization": auth_header}
         return {}
+
+    def _get(
+        self,
+        path: str,
+        params: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, str]] = None,
+    ) -> dict:
+        """GET path with auth; raise for status; return JSON."""
+        if params is not None:
+            logger.debug("GET %s params=%s", path, params)
+        else:
+            logger.debug("GET %s", path)
+        h = self._get_auth_headers()
+        if headers:
+            h = {**h, **headers}
+        resp = self._client.get(path, params=params, headers=h)
+        resp.raise_for_status()
+        return resp.json()
+
+    def _post(self, path: str, body: dict) -> dict:
+        """POST path with body and auth; raise for status; return JSON."""
+        logger.debug("POST %s body=%s", path, body)
+        resp = self._client.post(path, json=body, headers=self._get_auth_headers())
+        resp.raise_for_status()
+        return resp.json()
+
+    def _put(self, path: str, body: dict) -> dict:
+        """PUT path with body and auth; raise for status; return JSON."""
+        logger.debug("PUT %s body=%s", path, body)
+        resp = self._client.put(path, json=body, headers=self._get_auth_headers())
+        resp.raise_for_status()
+        return resp.json()
+
+    def _delete(self, path: str) -> None:
+        """DELETE path with auth; raise for status."""
+        logger.debug("DELETE %s", path)
+        resp = self._client.delete(path, headers=self._get_auth_headers())
+        resp.raise_for_status()
 
     @staticmethod
     def _retry_decorator():

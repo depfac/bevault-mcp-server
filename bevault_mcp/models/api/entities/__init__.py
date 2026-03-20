@@ -16,6 +16,7 @@ from .information_mart import (
     SourceColumn,
 )
 from .snapshot import Snapshot
+from .pit_table import PitTable, PitTableSatelliteRef
 from .mapping import (
     HubMapping,
     LinkMapping,
@@ -46,8 +47,13 @@ __all__ = [
     "InformationMartScriptColumn",
     "SourceColumn",
     "Snapshot",
+    "PitTable",
+    "PitTableSatelliteRef",
     "HubMapping",
     "LinkMapping",
     "SatelliteMapping",
     "StagingTableMapping",
 ]
+
+# Resolve forward references in Satellite (parent: Union[Hub, Link])
+Satellite.model_rebuild(_types_namespace={"Hub": Hub, "Link": Link})

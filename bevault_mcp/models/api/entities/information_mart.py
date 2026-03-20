@@ -5,6 +5,7 @@ from typing import Any, List, Literal, Optional
 from pydantic import Field, model_validator
 
 from ..base import BeVaultEntity
+from ..embedded import parse_embedded_resource
 
 
 class SourceColumn(BeVaultEntity):
@@ -48,29 +49,13 @@ class InformationMartScript(BeVaultEntity):
 
     @model_validator(mode="before")
     @classmethod
-    def parse_embedded_data(cls, data: Any) -> Any:
-        """Parse columns from nested _embedded structure."""
+    def parse_embedded_resources(cls, data: Any) -> Any:
+        """Extract embedded resources (columns) from _embedded."""
         if not isinstance(data, dict):
             return data
 
         result = data.copy()
-
-        # Parse columns from nested _embedded structure
-        # Structure: _embedded.columns._embedded.columns
-        columns = []
-        if "_embedded" in result:
-            embedded = result["_embedded"]
-            if "columns" in embedded:
-                columns_embedded = embedded["columns"]
-                if (
-                    isinstance(columns_embedded, dict)
-                    and "_embedded" in columns_embedded
-                ):
-                    columns_list = columns_embedded["_embedded"].get("columns", [])
-                    if isinstance(columns_list, list):
-                        columns = columns_list
-
-        result["columns"] = columns
+        result["columns"] = parse_embedded_resource(result, "columns")
 
         return result
 
@@ -91,23 +76,14 @@ class InformationMart(BeVaultEntity):
 
     @model_validator(mode="before")
     @classmethod
-    def parse_embedded_data(cls, data: Any) -> Any:
-        """Parse scripts from nested _embedded structure."""
+    def parse_embedded_resources(cls, data: Any) -> Any:
+        """Extract embedded resources (scripts) from _embedded."""
         if not isinstance(data, dict):
             return data
 
         result = data.copy()
-
-        # Parse scripts from nested _embedded structure
-        # Structure: _embedded.informationMartScripts
-        scripts = []
-        if "_embedded" in result:
-            embedded = result["_embedded"]
-            if "informationMartScripts" in embedded:
-                scripts_list = embedded["informationMartScripts"]
-                if isinstance(scripts_list, list):
-                    scripts = scripts_list
-
-        result["scripts"] = scripts
+        result["scripts"] = parse_embedded_resource(
+            result, "informationMartScripts", result_key="informationMartScripts"
+        )
 
         return result

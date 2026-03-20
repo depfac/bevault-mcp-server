@@ -1,13 +1,18 @@
 """Satellite entity model."""
 
-from typing import Any, List, Literal, Optional, Union
+from __future__ import annotations
 
-from pydantic import Field, model_validator
+from typing import TYPE_CHECKING, Any, List, Literal, Optional, Union
+
+from pydantic import model_validator
 
 from ..base import BeVaultEntity
+from ..embedded import parse_embedded_resource, parse_embedded_single
 from .base_model_entity import BaseModelEntity
-from .hub import Hub
-from .link import Link
+
+if TYPE_CHECKING:
+    from .hub import Hub
+    from .link import Link
 
 
 class SatelliteColumn(BeVaultEntity):
@@ -35,31 +40,19 @@ class Satellite(BaseModelEntity):
     mappingCount: Optional[int] = None
     displayName: Optional[str] = None
     subSequenceColumn: Optional[SatelliteColumn] = None
-    columns: List[SatelliteColumn] = Field(default_factory=list)
+    columns: Optional[List[SatelliteColumn]] = None
     parent: Optional[Union["Hub", "Link"]] = None
 
     @model_validator(mode="before")
     @classmethod
-    def parse_embedded_data(cls, data: Any) -> Any:
-        """Parse columns and parent from _embedded structure."""
+    def parse_embedded_resources(cls, data: Any) -> Any:
+        """Extract embedded resources (columns, parent) from _embedded."""
         if not isinstance(data, dict):
             return data
 
         result = data.copy()
-
-        # Parse columns and parent from _embedded structure
-        columns = []
-        parent = None
-        if "_embedded" in result:
-            embedded = result.get("_embedded", {})
-            if "columns" in embedded:
-                columns_list = embedded.get("columns", [])
-                if isinstance(columns_list, list):
-                    columns = columns_list
-            if "parent" in embedded:
-                parent = embedded.get("parent")
-
-        result["columns"] = columns
-        result["parent"] = parent
+        columns = parse_embedded_resource(result, "columns")
+        result["columns"] = columns if columns else None
+        result["parent"] = parse_embedded_single(result, "parent")
 
         return result

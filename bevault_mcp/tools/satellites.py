@@ -55,13 +55,9 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
             parent_id = parentIdOrName
             if not is_guid(parentIdOrName):
                 if parentType == "hub":
-                    parent_entity = client.model.get_hub_by_id(
-                        project_id, parentIdOrName
-                    )
+                    parent_entity = client.model.get_hub(project_id, parentIdOrName)
                 else:  # parentType == "link"
-                    parent_entity = client.model.get_link_by_id(
-                        project_id, parentIdOrName
-                    )
+                    parent_entity = client.model.get_link(project_id, parentIdOrName)
                 parent_id = parent_entity.id
                 logger.debug(
                     "Resolved parent %s name '%s' to ID: %s",

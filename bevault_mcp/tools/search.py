@@ -71,12 +71,12 @@ def _transform_entity(
                 # Parent not in search results - fetch from API
                 try:
                     if entity.parentType == "Hub":
-                        parent_entity = client.model.get_hub_by_id(
+                        parent_entity = client.model.get_hub(
                             project_id, entity.parentId
                         )
                         parent_name = parent_entity.name
                     elif entity.parentType == "Link":
-                        parent_entity = client.model.get_link_by_id(
+                        parent_entity = client.model.get_link(
                             project_id, entity.parentId
                         )
                         parent_name = parent_entity.name
