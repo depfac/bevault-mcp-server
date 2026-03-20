@@ -46,6 +46,29 @@ def parse_embedded_resource(
     return []
 
 
+def parse_embedded_single(
+    data: dict[str, Any],
+    resource_name: str,
+) -> Any | None:
+    """
+    Extract a single embedded object from a HAL API response.
+
+    Use when _embedded.{resource_name} is a single object (e.g. parent),
+    not a collection.
+
+    Returns:
+        The embedded object or None if not found.
+    """
+    if "_embedded" not in data:
+        return None
+
+    embedded = data["_embedded"]
+    if resource_name not in embedded:
+        return None
+
+    return embedded[resource_name]
+
+
 def strip_columns_from_satellites(satellites: List[Any]) -> List[Any]:
     """
     Remove columns and _embedded from satellite dicts to reduce payload size.
