@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.3.0](https://github.com/depfac/bevault-mcp-server/compare/v2.2.0...v2.3.0) (2026-03-20)
+
+
+### Features
+
+* **tools:** add optional embedded satellites to get_hub and get_link ([84b7f6a](https://github.com/depfac/bevault-mcp-server/commit/84b7f6acd42715950dac64481c0c645bca736df1))
+* **tools:** add pit table support for hubs and links ([eb02829](https://github.com/depfac/bevault-mcp-server/commit/eb02829b1cfe3700d30c77076dbcb08b13ad2ae8))
+
+
+### Bug Fixes
+
+* **main:** handle Ctrl+C for clean server shutdown ([ed65300](https://github.com/depfac/bevault-mcp-server/commit/ed65300d4b7ead627d32eef032ff82377a660b12))
+* **tools:** make searchString optional in search_model ([dbac9b5](https://github.com/depfac/bevault-mcp-server/commit/dbac9b556f6571d9dbde2e7b7a0ba400030be4b2))
+
 ## [2.2.0](https://github.com/depfac/bevault-mcp-server/compare/v2.1.0...v2.2.0) (2026-03-04)
 
 
