@@ -29,7 +29,7 @@ class ModelClient(BaseClient):
         query = {
             "index": params.index,
             "limit": params.limit,
-            "searchString": params.searchString,
+            "searchString": params.searchString or "",
             "includeHubs": str(params.includeHubs).lower(),
             "includeLinks": str(params.includeLinks).lower(),
             "includeSatellites": str(params.includeSatellites).lower(),

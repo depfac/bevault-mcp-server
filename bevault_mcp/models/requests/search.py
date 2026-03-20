@@ -8,7 +8,7 @@ from pydantic import BaseModel
 class SearchParams(BaseModel):
     """Parameters for searching model entities."""
 
-    searchString: str
+    searchString: Optional[str] = None
     projectName: Optional[str] = None
     index: int = 0
     limit: int = 10
