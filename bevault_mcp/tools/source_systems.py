@@ -1,4 +1,5 @@
 import logging
+from collections import defaultdict
 
 from fastmcp import FastMCP
 
@@ -188,40 +189,52 @@ def register_fastmcp(mcp: FastMCP, client: BeVaultClient) -> None:
                 project_id, index=index, limit=limit, filter=filter_str
             )
 
+            source_ids_page = [ss.id for ss in result.source_systems]
+            staging_by_package: dict[str, list[StagingTableInfo]] = defaultdict(list)
+            if source_ids_page:
+                try:
+                    page_index = 0
+                    page_limit = 100
+                    while True:
+                        batch = client.source_systems.list_datapackage_tables(
+                            project_id,
+                            source_ids_page,
+                            include_columns=False,
+                            index=page_index,
+                            limit=page_limit,
+                        )
+                        for table in batch.tables:
+                            staging_by_package[table.dataPackageId].append(
+                                StagingTableInfo(id=table.id, name=table.tableName)
+                            )
+                        got = len(batch.tables)
+                        if page_index + got >= batch.total or got == 0:
+                            break
+                        page_index += got
+                        logger.debug(
+                            "list_datapackage_tables pagination index=%s got=%s total=%s",
+                            page_index - got,
+                            got,
+                            batch.total,
+                        )
+                except Exception as e:
+                    logger.warning(
+                        "Failed to fetch staging tables for source systems page: %s",
+                        e,
+                    )
+                    staging_by_package = defaultdict(list)
+
             # Transform to optimized format
             optimized_source_systems = []
             for source_system in result.source_systems:
                 optimized_packages = []
                 for pkg in source_system.packages:
-                    # Get staging tables for this data package
-                    staging_tables = []
-                    try:
-                        staging_tables_response = (
-                            client.source_systems.get_staging_tables(
-                                project_id,
-                                source_system.id,
-                                pkg.id,
-                                index=0,
-                                limit=1000000,
-                            )
-                        )
-                        staging_tables = [
-                            StagingTableInfo(id=table.id, name=table.tableName)
-                            for table in staging_tables_response.tables
-                        ]
-                        logger.debug(
-                            "Found %d staging tables for data package '%s'",
-                            len(staging_tables),
-                            pkg.name,
-                        )
-                    except Exception as e:
-                        logger.warning(
-                            "Failed to fetch staging tables for data package '%s' (id: %s): %s",
-                            pkg.name,
-                            pkg.id,
-                            e,
-                        )
-                        # Continue with empty list if fetch fails
+                    staging_tables = list(staging_by_package.get(pkg.id, []))
+                    logger.debug(
+                        "Found %d staging tables for data package '%s'",
+                        len(staging_tables),
+                        pkg.name,
+                    )
 
                     optimized_packages.append(
                         OptimizedDataPackage(
