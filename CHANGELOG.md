@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.0](https://github.com/depfac/bevault-mcp-server/compare/v2.3.0...v3.0.0) (2026-05-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* **source-systems:** search_source_systems now requires Metavault API 5.3.0 (beVault 3.9.6) or newer. Earlier releases do not expose the datapackage table list endpoint used for staging metadata.
+
+### Performance Improvements
+
+* **source-systems:** batch staging tables in search_source_systems ([9005ea1](https://github.com/depfac/bevault-mcp-server/commit/9005ea14fb1232105240dab4efec01ca4903a1c3))
+
 ## [2.3.0](https://github.com/depfac/bevault-mcp-server/compare/v2.2.0...v2.3.0) (2026-03-20)
 
 
