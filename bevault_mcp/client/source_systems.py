@@ -1,6 +1,6 @@
 """Source systems client."""
 
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from ..models import (
     CreateDataPackageRequest,
@@ -234,6 +234,50 @@ class SourceSystemsClient(BaseClient):
         """
         query: Dict[str, Any] = {"index": index, "limit": limit}
         path = f"/metavault/api/projects/{project_id}/metavault/sourcesystems/{source_system_id_or_name}/datapackages/{data_package_id_or_name}/tables"
+        data = self._get(path, params=query)
+        return StagingTablesResponse.model_validate(data)
+
+    @BaseClient._retry_decorator()
+    def list_datapackage_tables(
+        self,
+        project_id: str,
+        source_ids: List[str],
+        *,
+        include_columns: bool = False,
+        index: int = 0,
+        limit: int = 1000000,
+    ) -> StagingTablesResponse:
+        """
+        List data package (staging) tables for a project, filtered by source system IDs.
+
+        Uses GET .../datapackagetables with ``sourceIds`` (comma-separated) and optional
+        ``includeColumns`` per Metavault API (5.3.0+).
+
+        Args:
+            project_id: Project ID
+            source_ids: Source system GUIDs to include (empty list returns an empty page)
+            include_columns: When false, omits column payloads from each table
+            index: Pagination index
+            limit: Page size
+        """
+        if not source_ids:
+            return StagingTablesResponse.model_validate(
+                {
+                    "_embedded": {"dataPackageTables": []},
+                    "sort": [],
+                    "index": index,
+                    "limit": limit,
+                    "total": 0,
+                    "expand": [],
+                }
+            )
+        query: Dict[str, Any] = {
+            "index": index,
+            "limit": limit,
+            "includeColumns": include_columns,
+            "sourceIds": ",".join(source_ids),
+        }
+        path = f"/metavault/api/projects/{project_id}/datapackagetables"
         data = self._get(path, params=query)
         return StagingTablesResponse.model_validate(data)
 
