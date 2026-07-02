@@ -13,11 +13,10 @@
 Add optional beVault States integration behind STATES_ENABLED, with OIDC-backed API client, Pydantic models, and conditional tool registration alongside MetaVault.
 
 MCP tools:
-
-State machines: list, get, create, update, delete
-Executions: list, get, start
-Activities: get_activities
-Stores: get_stores
+* State machines: list, get, create, update, delete
+* Executions: list, get, start
+* Activities: get_activities
+* Stores: get_stores
 
 ## [3.0.0](https://github.com/depfac/bevault-mcp-server/compare/v2.3.0...v3.0.0) (2026-05-06)
 
