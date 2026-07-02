@@ -88,7 +88,7 @@ def _resolve_data_package_id(
 
 def _get_base_url(client: BeVaultClient) -> str:
     """Get the base URL for API calls."""
-    return client._settings.bevault_base_url.rstrip("/")
+    return client._settings.require_bevault_base_url().rstrip("/")
 
 
 def _build_hub_url(base_url: str, project_id: str, hub_id_or_name: str) -> str:

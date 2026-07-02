@@ -28,6 +28,7 @@ This MCP server allows you to perform actions that users can do in the following
 - **Build**: Create and manage data models (Hubs, Links, Satellites, Reference Tables)
 - **Source**: Manage source systems, data packages, and staging tables
 - **Distribute**: Create and manage information marts and their scripts
+- **States** (optional): Orchestrate state machines and executions — requires OIDC
 
 > **Note**: Support for the **Verify** module will be added in a future release.
 
@@ -44,6 +45,7 @@ The server exposes tools to interact with beVault's API using FastMCP with HTTP 
 - `create_staging_table` and column tools to define and evolve staging tables
 - Mapping tools (`map_column_to_hub`, `map_columns_to_link`, `map_columns_to_satellite`, delete/update mapping helpers)
 - Introspection tools like `get_link`, `get_satellite`, `get_staging_table`, `get_snapshots`
+- **States** (requires OIDC): `list_state_machines`, `get_state_machine`, `create_state_machine`, `update_state_machine`, `delete_state_machine`, `list_executions`, `get_execution`, `start_execution`
 
 ## Installation
 
@@ -102,22 +104,60 @@ The MCP server will be available at `http://localhost:8000/mcp`. Remember to rep
 
 ## Configuration
 
-### Environment Variables
+### Deployment Modes
 
-The following environment variables are required to run the MCP server:
+The server supports three deployment modes via module toggles. At least one module must be enabled.
+
+| Mode | Configuration | Tools |
+|------|---------------|-------|
+| MetaVault only (default) | `METAVAULT_ENABLED=true`, `STATES_ENABLED=false` | Build, Source, Distribute |
+| States only | `METAVAULT_ENABLED=false`, `STATES_ENABLED=true` | States |
+| Both | both `true` | MetaVault + States |
+
+**Auth by mode:**
+
+| Mode | MetaVault tools | States tools |
+|------|-----------------|--------------|
+| API key only | Available | Not registered |
+| OIDC | Available | Available when `STATES_ENABLED=true` |
+
+States requires OIDC — the States API does not accept the `bevault-api-key` header. A States-only deployment must have OIDC configured.
+
+**States-only example:**
+
+```ini
+METAVAULT_ENABLED=false
+STATES_ENABLED=true
+STATES_BASE_URL=https://states.your.domain
+REQUEST_TIMEOUT_SECONDS=30
+# OIDC variables required (see OIDC Configuration below)
+```
+
+### Environment Variables
 
 Create a `.env` file in the project root or set these environment variables:
 
 ```ini
+# MetaVault-only (default deployment)
+METAVAULT_ENABLED=true
+STATES_ENABLED=false
 BEVAULT_BASE_URL=https://bevault.metavault.url.com
 REQUEST_TIMEOUT_SECONDS=30
 MCP_HOST=0.0.0.0
 MCP_PORT=8000
 ```
 
-**Required Variables:**
-- `BEVAULT_BASE_URL`: The URL of your beVault MetaVault instance (required)
-- `REQUEST_TIMEOUT_SECONDS`: Number of seconds after which requests to beVault's API will timeout (required)
+**Required Variables (MetaVault mode, default):**
+- `BEVAULT_BASE_URL`: The URL of your beVault MetaVault instance (required when `METAVAULT_ENABLED=true`)
+- `REQUEST_TIMEOUT_SECONDS`: Number of seconds after which requests to beVault's API will timeout
+
+**Required Variables (States mode):**
+- `STATES_BASE_URL`: The URL of your beVault States API (required when `STATES_ENABLED=true`)
+- OIDC configuration (required for States-only; see [OIDC Configuration](#oidc-configuration))
+
+**Module Toggles (optional):**
+- `METAVAULT_ENABLED`: Enable MetaVault tools (default: `true`)
+- `STATES_ENABLED`: Enable States module (default: `false`)
 
 **Optional Variables:**
 - `MCP_HOST`: The host address on which the MCP server will run (optional, default: `0.0.0.0`)
@@ -190,7 +230,9 @@ When OIDC variables are **not** configured, the MCP server requires the `bevault
 
 When OIDC variables are configured, the MCP server uses your OIDC provider for authentication. **End users are asked to authenticate themselves**, and each user inherits **beVault's rights of the authenticated user**. The MCP server and beVault must use the same OIDC provider so that the Bearer token issued for the MCP server is also accepted by beVault.
 
-Configure the following environment variables (see [OIDC configuration](#oidc-configuration) below). The MCP client will direct users through the OIDC flow; after authentication, the Bearer token is sent on each request and forwarded to beVault.
+When the States module is enabled, the same Bearer token must also be accepted by the States API (compatible audience/realm).
+
+Configure the following environment variables (see [OIDC configuration](#oidc-configuration) below). The MCP client will direct users through the OIDC flow; after authentication, the Bearer token is sent on each request and forwarded to beVault and States APIs.
 
 For **browser-based clients** (e.g., web apps using the MCP server), configure `CORS_ORIGINS` so the OIDC redirect flow can complete. See [CORS for Browser-Based OIDC Clients](#cors-for-browser-based-oidc-clients).
 
