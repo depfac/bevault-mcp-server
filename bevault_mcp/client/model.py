@@ -71,7 +71,7 @@ class ModelClient(BaseClient):
 
     def construct_hub_url(self, project_id: str, hub_id: str) -> str:
         """Construct the hub URL for a given project and hub ID."""
-        base_url = self._settings.bevault_base_url.rstrip("/")
+        base_url = self._settings.require_bevault_base_url().rstrip("/")
         return f"{base_url}/metavault/api/projects/{project_id}/model/hubs/{hub_id}"
 
     @BaseClient._retry_decorator()

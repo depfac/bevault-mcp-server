@@ -9,11 +9,11 @@ from mcp.types import Icon
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
 
-from .client import BeVaultClient
+from .client import BeVaultClient, StatesClient
 from .config import Settings
 from .logging_config import configure_logging
 from .sentry_config import init_sentry
-from .tools import register_all_tools_fastmcp
+from .tools import register_metavault_tools_fastmcp, register_states_tools_fastmcp
 
 logger = logging.getLogger(__name__)
 
@@ -57,13 +57,28 @@ def create_mcp_server() -> FastMCP:
         mcp_kwargs["auth"] = auth
 
     mcp = FastMCP("bevault-mcp", **mcp_kwargs)
-    client = BeVaultClient(settings)
 
-    # Register all tools with FastMCP
-    register_all_tools_fastmcp(mcp, client)
+    bevault_client = None
+    if settings.metavault_enabled:
+        bevault_client = BeVaultClient(settings)
+        register_metavault_tools_fastmcp(mcp, bevault_client)
+        logger.info("MetaVault module enabled")
 
-    # Store client in mcp state for cleanup
-    mcp._bevault_client = client
+    states_client = None
+    if settings.states_enabled:
+        if oidc_config is None:
+            if not settings.metavault_enabled:
+                raise ValueError("States-only deployment requires OIDC")
+            logger.warning(
+                "States enabled but OIDC not configured; States tools not registered"
+            )
+        else:
+            states_client = StatesClient(settings)
+            register_states_tools_fastmcp(mcp, states_client)
+            logger.info("States module enabled")
+
+    mcp._bevault_client = bevault_client
+    mcp._states_client = states_client
 
     return mcp
 

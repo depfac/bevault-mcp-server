@@ -9,15 +9,21 @@ from .mappings import MappingsClient
 from .model import ModelClient
 from .projects import ProjectsClient
 from .source_systems import SourceSystemsClient
+from .states import StatesClient
+
+__all__ = ["BeVaultClient", "StatesClient"]
 
 
 class BeVaultClient:
     """Main client for beVault API - facade for all resource clients."""
 
     def __init__(self, settings: Settings) -> None:
+        if not settings.bevault_base_url:
+            raise ValueError("bevault_base_url is required for BeVaultClient")
+
         self._settings = settings
         http_client = httpx.Client(
-            base_url=settings.bevault_base_url,
+            base_url=settings.require_bevault_base_url(),
             timeout=settings.request_timeout_seconds,
             headers={"Accept": "application/json"},
         )
