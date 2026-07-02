@@ -1,5 +1,23 @@
 # Changelog
 
+## [4.0.0](https://github.com/depfac/bevault-mcp-server/compare/v3.0.0...v4.0.0) (2026-07-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* **states:** integrate States module with MCP tools
+
+### Features
+
+* **states:** integrate States module with MCP tools ([26f5643](https://github.com/depfac/bevault-mcp-server/commit/26f5643ed3cd17e39141ff4d14b6c1163dbdf996))
+Add optional beVault States integration behind STATES_ENABLED, with OIDC-backed API client, Pydantic models, and conditional tool registration alongside MetaVault.
+
+MCP tools:
+* State machines: list, get, create, update, delete
+* Executions: list, get, start
+* Activities: get_activities
+* Stores: get_stores
+
 ## [3.0.0](https://github.com/depfac/bevault-mcp-server/compare/v2.3.0...v3.0.0) (2026-05-06)
 
 
