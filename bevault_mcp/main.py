@@ -4,16 +4,19 @@ from pathlib import Path
 
 from fastmcp import FastMCP
 from fastmcp.server.auth.oidc_proxy import OIDCProxy
+from fastmcp.server.providers import FileSystemProvider
 from fastmcp.utilities.types import Image
 from mcp.types import Icon
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
 
-from .client import BeVaultClient, StatesClient
 from .config import Settings
 from .logging_config import configure_logging
+from .metavault.client import MetavaultClient
+from .metavault.client.deps import init_metavault_client
 from .sentry_config import init_sentry
-from .tools import register_metavault_tools_fastmcp, register_states_tools_fastmcp
+from .states.client import StatesClient
+from .states.client.deps import init_states_client
 
 logger = logging.getLogger(__name__)
 
@@ -56,15 +59,17 @@ def create_mcp_server() -> FastMCP:
     if auth is not None:
         mcp_kwargs["auth"] = auth
 
-    mcp = FastMCP("bevault-mcp", **mcp_kwargs)
+    # Clients must be initialized before their FileSystemProvider is constructed:
+    # the provider imports the tool modules eagerly, and each tool module resolves
+    # its client via get_*_client() at import time.
+    module_root = Path(__file__).resolve().parent
+    providers: list[FileSystemProvider] = []
 
-    bevault_client = None
     if settings.metavault_enabled:
-        bevault_client = BeVaultClient(settings)
-        register_metavault_tools_fastmcp(mcp, bevault_client)
+        init_metavault_client(MetavaultClient(settings))
+        providers.append(FileSystemProvider(module_root / "metavault" / "tools"))
         logger.info("MetaVault module enabled")
 
-    states_client = None
     if settings.states_enabled:
         if oidc_config is None:
             if not settings.metavault_enabled:
@@ -73,14 +78,12 @@ def create_mcp_server() -> FastMCP:
                 "States enabled but OIDC not configured; States tools not registered"
             )
         else:
-            states_client = StatesClient(settings)
-            register_states_tools_fastmcp(mcp, states_client)
+            init_states_client(StatesClient(settings))
+            providers.append(FileSystemProvider(module_root / "states" / "tools"))
             logger.info("States module enabled")
 
-    mcp._bevault_client = bevault_client
-    mcp._states_client = states_client
-
-    return mcp
+    mcp_kwargs["providers"] = providers
+    return FastMCP("bevault-mcp", **mcp_kwargs)
 
 
 def run() -> None:
