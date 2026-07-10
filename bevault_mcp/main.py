@@ -34,13 +34,12 @@ def create_mcp_server() -> FastMCP:
             "client_id": oidc_config.client_id,
             "client_secret": oidc_config.client_secret,
             "base_url": oidc_config.base_url,
+            "required_scopes": oidc_config.required_scopes,
         }
         if oidc_config.audience is not None:
             oidc_kwargs["audience"] = oidc_config.audience
         if oidc_config.redirect_path is not None:
             oidc_kwargs["redirect_path"] = oidc_config.redirect_path
-        if oidc_config.required_scopes is not None:
-            oidc_kwargs["required_scopes"] = oidc_config.required_scopes
         auth = OIDCProxy(**oidc_kwargs)
         logger.info("OIDC authentication enabled")
     else:

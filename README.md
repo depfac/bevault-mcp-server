@@ -252,7 +252,7 @@ For **browser-based clients** (e.g., web apps using the MCP server), configure `
 
 ### OIDC Configuration
 
-When all required OIDC variables are set, OIDC authentication is enabled. Leave them unset to use API key mode.
+When all required OIDC variables are set, OIDC authentication is enabled. Leave them unset to use API key mode. Required scopes default to `openid,profile` (required by MetaVault); set `OIDC_REQUIRED_SCOPES` only to override.
 
 ```ini
 # OIDC (optional - unset or leave empty to use bevault-api-key instead)
@@ -262,7 +262,7 @@ OIDC_CLIENT_SECRET=your-client-secret
 OIDC_BASE_URL=https://your-mcp-server.domain.com
 OIDC_AUDIENCE=optional-audience
 OIDC_REDIRECT_PATH=/optional-redirect-path
-OIDC_REQUIRED_SCOPES=openid,profile
+# OIDC_REQUIRED_SCOPES=openid,profile,email  # optional override
 ```
 
 | Variable | Required | Description |
@@ -273,7 +273,7 @@ OIDC_REQUIRED_SCOPES=openid,profile
 | `OIDC_BASE_URL` | Yes* | Public URL of this MCP server (used for OAuth redirects) |
 | `OIDC_AUDIENCE` | No | Token audience if required by your provider |
 | `OIDC_REDIRECT_PATH` | No | Custom OAuth redirect path |
-| `OIDC_REQUIRED_SCOPES` | No | Comma-separated scopes (e.g. `openid,profile`) |
+| `OIDC_REQUIRED_SCOPES` | No | Optional override for required scopes; defaults to `openid,profile` |
 
 \*All four (`OIDC_CONFIG_URL`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET`, `OIDC_BASE_URL`) must be set for OIDC to be enabled.
 
