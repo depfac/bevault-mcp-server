@@ -13,6 +13,7 @@
   - [OpenTelemetry Tracing](#opentelemetry-tracing)
   - [Authentication](#authentication)
   - [OIDC Configuration](#oidc-configuration)
+  - [OAuth Client Storage (OIDC)](#oauth-client-storage-oidc)
   - [CORS for Browser-Based OIDC Clients](#cors-for-browser-based-oidc-clients)
 - [Run](#run)
 - [Using with n8n](#using-with-n8n)
@@ -88,9 +89,21 @@ services:
       REQUEST_TIMEOUT_SECONDS: "30"
       MCP_HOST: 0.0.0.0
       MCP_PORT: "8000"
+      # Persist OAuth client registrations (required when using OIDC)
+      FASTMCP_HOME: /data/fastmcp
+      # OIDC variables (when enabled)
+      # OIDC_CONFIG_URL: ...
+      # OIDC_CLIENT_ID: ...
+      # OIDC_CLIENT_SECRET: ...
+      # OIDC_BASE_URL: ...
+    volumes:
+      - bevault-mcp-data:/data/fastmcp
     ports:
       - "8000:8000"
     restart: always
+
+volumes:
+  bevault-mcp-data:
 ```
 
 Then run:
@@ -162,6 +175,7 @@ MCP_PORT=8000
 **Optional Variables:**
 - `MCP_HOST`: The host address on which the MCP server will run (optional, default: `0.0.0.0`)
 - `MCP_PORT`: The port on which the MCP server will run (optional, default: `8000`)
+- `FASTMCP_HOME`: Data directory for FastMCP (optional; defaults to the platform user data directory). Set explicitly when using OIDC in Docker or for local persistence—see [OAuth Client Storage (OIDC)](#oauth-client-storage-oidc)
 - `CORS_ORIGINS`: Comma-separated allowed origins for CORS (optional; required for browser-based OIDC clients—see [CORS for Browser-Based OIDC Clients](#cors-for-browser-based-oidc-clients))
 
 ### Sentry Monitoring
@@ -262,6 +276,31 @@ OIDC_REQUIRED_SCOPES=openid,profile
 | `OIDC_REQUIRED_SCOPES` | No | Comma-separated scopes (e.g. `openid,profile`) |
 
 \*All four (`OIDC_CONFIG_URL`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET`, `OIDC_BASE_URL`) must be set for OIDC to be enabled.
+
+### OAuth Client Storage (OIDC)
+
+When OIDC is enabled, MCP clients register dynamically with the server (Dynamic Client Registration). These registrations—and related OAuth state such as upstream tokens and authorization codes—must persist across server restarts.
+
+**API key mode does not use client storage**—this section applies only when OIDC is enabled.
+
+#### Docker
+
+Mount a named volume at `FASTMCP_HOME` so client registrations survive container recreate and redeploy. The [Docker Compose example](#production-setup) above shows the recommended setup:
+
+```yaml
+environment:
+  FASTMCP_HOME: /data/fastmcp
+volumes:
+  - bevault-mcp-data:/data/fastmcp
+```
+
+#### Local development
+
+For local persistence, set `FASTMCP_HOME` to a project-local directory (e.g. `./.fastmcp`).
+
+#### Production notes
+
+- Keep `OIDC_CLIENT_SECRET` stable across redeploys. FastMCP derives the JWT signing key and storage encryption key from it; changing the secret invalidates stored OAuth state and forces clients to re-register.
 
 ### CORS for Browser-Based OIDC Clients
 

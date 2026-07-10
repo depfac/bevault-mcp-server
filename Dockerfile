@@ -22,7 +22,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Default environment variables (override via .env or docker run -e)
-ENV REQUEST_TIMEOUT_SECONDS=30
+ENV REQUEST_TIMEOUT_SECONDS=30 \
+    FASTMCP_HOME=/data/fastmcp
+
+RUN mkdir -p /data/fastmcp
 
 # Run the MCP server via module
 CMD ["python", "-m", "bevault_mcp.main"]
