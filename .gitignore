@@ -27,3 +27,6 @@ htmlcov/
 
 # Docker
 *.log
+
+# FastMCP OAuth client storage (local dev)
+.fastmcp/

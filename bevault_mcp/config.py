@@ -3,6 +3,8 @@ from dataclasses import dataclass
 
 from dotenv import load_dotenv
 
+DEFAULT_OIDC_REQUIRED_SCOPES = ["openid", "profile"]
+
 
 def _env_bool(name: str, default: bool) -> bool:
     raw = os.getenv(name)
@@ -17,9 +19,9 @@ class OidcConfig:
     client_id: str
     client_secret: str
     base_url: str
+    required_scopes: list[str]
     audience: str | None = None
     redirect_path: str | None = None
-    required_scopes: list[str] | None = None
 
 
 @dataclass
@@ -86,7 +88,7 @@ class Settings:
         required_scopes = (
             [scope.strip() for scope in required_scopes_raw.split(",") if scope.strip()]
             if required_scopes_raw
-            else None
+            else list(DEFAULT_OIDC_REQUIRED_SCOPES)
         )
 
         return OidcConfig(
