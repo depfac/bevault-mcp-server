@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.0.1](https://github.com/depfac/bevault-mcp-server/compare/v4.0.0...v4.0.1) (2026-07-10)
+
+
+### Bug Fixes
+
+* **auth:** default OIDC required scopes to openid,profile ([284ca57](https://github.com/depfac/bevault-mcp-server/commit/284ca5781601179a05f1078bfb12ef3c4e62381e))
+* **states:** coerce malformed defaultInput strings in API responses ([066b6b7](https://github.com/depfac/bevault-mcp-server/commit/066b6b76ff18c87b3868ef049e45e3d8dbbeccf6))
+
 ## [4.0.0](https://github.com/depfac/bevault-mcp-server/compare/v3.0.0...v4.0.0) (2026-07-02)
 
 
