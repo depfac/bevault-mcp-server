@@ -1,4 +1,4 @@
-fastapi>=0.139.0
+fastapi>=0.139.2
 fastmcp>=3.4.4
 httpx>=0.28.1
 opentelemetry-exporter-otlp>=1.43.0
