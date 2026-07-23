@@ -14,7 +14,7 @@ class ProjectsClient(BaseClient):
     @BaseClient._retry_decorator()
     def get_projects(self) -> ProjectsResponse:
         """Get list of projects the user has explicit read rights on (onlyAffected=true)."""
-        query = {"onlyAffected": True}
+        query = {"onlyAffected": True, "limit": 10000}
         path = "/metavault/api/projects"
         data = self._get(path, params=query)
         return ProjectsResponse.model_validate(data)
