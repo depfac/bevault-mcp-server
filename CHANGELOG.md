@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.0.2](https://github.com/depfac/bevault-mcp-server/compare/v4.0.1...v4.0.2) (2026-07-23)
+
+
+### Bug Fixes
+
+* **projects:** increase the limit of projects returned ([eaccef3](https://github.com/depfac/bevault-mcp-server/commit/eaccef3b285276e5f9742e06281b6225ba00e62d))
+
 ## [4.0.1](https://github.com/depfac/bevault-mcp-server/compare/v4.0.0...v4.0.1) (2026-07-10)
 
 
