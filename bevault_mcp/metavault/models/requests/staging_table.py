@@ -40,6 +40,8 @@ class StagingTableColumn(BeVaultRequest):
     businessName: Optional[str] = None
     technicalDescription: Optional[str] = None
     length: Optional[int] = None
+    scale: Optional[int] = None  # For VarNumeric type
+    precision: Optional[int] = None  # For VarNumeric type
 
     @field_validator("dataType")
     @classmethod
@@ -48,10 +50,17 @@ class StagingTableColumn(BeVaultRequest):
         return map_user_type_to_api_type(v)
 
     @model_validator(mode="after")
-    def validate_length_for_string(self) -> "StagingTableColumn":
-        """Validate that length is provided for String type."""
+    def validate_type_parameters(self) -> "StagingTableColumn":
+        """Validate type-specific parameters (length for String, scale/precision for VarNumeric)."""
         if self.dataType == "String" and self.length is None:
             raise ValueError("length is required for String dataType")
+        if self.dataType == "VarNumeric":
+            if self.precision is None:
+                raise ValueError(
+                    "precision is required for Numeric/VarNumeric dataType"
+                )
+            if self.scale is None:
+                raise ValueError("scale is required for Numeric/VarNumeric dataType")
         return self
 
 
