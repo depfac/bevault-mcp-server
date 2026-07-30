@@ -12,6 +12,7 @@ class BaseModelEntity(BeVaultEntity):
     name: str
     entityType: str  # Overridden in subclasses with Literal types
     tableName: Optional[str] = None
+    businessName: Optional[str] = None
     businessDescription: Optional[str] = None
     technicalDescription: Optional[str] = None
     _embedded: Optional[Dict[str, Any]] = None

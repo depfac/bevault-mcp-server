@@ -3,6 +3,7 @@
 from typing import List
 
 from ..models.api.entities.mapping import HubMapping, LinkMapping, SatelliteMapping
+from ..models.requests.satellite_mapping import CreateSatelliteMappingRequest
 from .base import BaseClient
 
 
@@ -95,6 +96,7 @@ class MappingsClient(BaseClient):
         parent_mapping_id: str,
         parent_type: str,
         satellite_name: str,
+        satellite_business_name: str,
         satellite_columns: List[str],
         staging_table_url: str,
         is_multi_active: bool = False,
@@ -107,7 +109,8 @@ class MappingsClient(BaseClient):
             project_id: Project ID
             parent_mapping_id: ID of the parent mapping (hub or link mapping)
             parent_type: Type of parent mapping - "hub" or "link"
-            satellite_name: Name of the satellite (will be prefixed with parent name)
+            satellite_name: Technical name of the satellite (will be prefixed with parent name)
+            satellite_business_name: Business name of the satellite (unrestricted)
             satellite_columns: List of column URLs
             staging_table_url: Full URL to the staging table
             is_multi_active: Whether this is a multi-active satellite (default: False)
@@ -121,15 +124,17 @@ class MappingsClient(BaseClient):
                 f"Invalid parent_type '{parent_type}'. Must be 'hub' or 'link'"
             )
 
+        request = CreateSatelliteMappingRequest(
+            satelliteName=satellite_name,
+            satelliteBusinessName=satellite_business_name,
+            satelliteColumns=satellite_columns,
+            stagingTable=staging_table_url,
+            isMultiActive=is_multi_active,
+            subSequenceColumn=sub_sequence_column_url,
+        )
+
         path = f"/metavault/api/projects/{project_id}/mappings/{parent_type}s/{parent_mapping_id}/satellites"
-        payload = {
-            "satelliteColumns": satellite_columns,
-            "satelliteName": satellite_name,
-            "stagingTable": staging_table_url,
-            "isMultiActive": is_multi_active,
-        }
-        if sub_sequence_column_url:
-            payload["subSequenceColumn"] = sub_sequence_column_url
+        payload = request.model_dump(mode="json", exclude_none=True)
 
         data = self._post(path, payload)
         return SatelliteMapping.model_validate(data)
@@ -142,6 +147,7 @@ class MappingsClient(BaseClient):
         parent_mapping_id: str,
         parent_type: str,
         satellite_name: str,
+        satellite_business_name: str,
         satellite_columns: List[str],
         staging_table_url: str,
         is_multi_active: bool = False,
@@ -155,7 +161,8 @@ class MappingsClient(BaseClient):
             satellite_mapping_id: ID of the satellite mapping to update
             parent_mapping_id: ID of the parent mapping (hub or link mapping)
             parent_type: Type of parent mapping - "hub" or "link"
-            satellite_name: Name of the satellite (will be prefixed with parent name)
+            satellite_name: Technical name of the satellite (will be prefixed with parent name)
+            satellite_business_name: Business name of the satellite (unrestricted)
             satellite_columns: List of column URLs
             staging_table_url: Full URL to the staging table
             is_multi_active: Whether this is a multi-active satellite (default: False)
@@ -169,15 +176,17 @@ class MappingsClient(BaseClient):
                 f"Invalid parent_type '{parent_type}'. Must be 'hub' or 'link'"
             )
 
+        request = CreateSatelliteMappingRequest(
+            satelliteName=satellite_name,
+            satelliteBusinessName=satellite_business_name,
+            satelliteColumns=satellite_columns,
+            stagingTable=staging_table_url,
+            isMultiActive=is_multi_active,
+            subSequenceColumn=sub_sequence_column_url,
+        )
+
         path = f"/metavault/api/projects/{project_id}/mappings/{parent_type}s/{parent_mapping_id}/satellites/{satellite_mapping_id}"
-        payload = {
-            "satelliteColumns": satellite_columns,
-            "satelliteName": satellite_name,
-            "stagingTable": staging_table_url,
-            "isMultiActive": is_multi_active,
-        }
-        if sub_sequence_column_url:
-            payload["subSequenceColumn"] = sub_sequence_column_url
+        payload = request.model_dump(mode="json", exclude_none=True)
 
         data = self._put(path, payload)
         return SatelliteMapping.model_validate(data)

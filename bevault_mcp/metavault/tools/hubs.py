@@ -16,6 +16,7 @@ client = get_metavault_client()
 def create_hub(
     projectName: str,
     name: str,
+    businessName: str,
     ignoreBusinessKeyCase: bool = False,
     businessKeyLength: int = 255,
     technicalDescription: str | None = None,
@@ -24,9 +25,12 @@ def create_hub(
     """
     Create a hub in a beVault project.
 
+    Requires beVault 3.12+ (businessName support).
+
     Args:
         projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
-        name: Name of the hub (mandatory, must be unique)
+        name: Technical name of the hub (mandatory, unique; max 25 chars; letters, digits, underscores only)
+        businessName: Business name of the hub (mandatory, unrestricted length and characters)
         ignoreBusinessKeyCase: Whether to ignore case in business key (default: False)
         businessKeyLength: Length of the business key (default: 255)
         technicalDescription: Technical description of the hub (optional)
@@ -36,7 +40,12 @@ def create_hub(
         The created hub entity as a dictionary.
     """
     try:
-        logger.info("create_hub: projectName=%s, name=%s", projectName, name)
+        logger.info(
+            "create_hub: projectName=%s, name=%s, businessName=%s",
+            projectName,
+            name,
+            businessName,
+        )
 
         # Get project ID from project name
         project_id = client.projects.get_by_name(projectName)
@@ -45,6 +54,7 @@ def create_hub(
         # Build the hub request
         hub_request = CreateHubRequest(
             name=name,
+            businessName=businessName,
             ignoreBusinessKeyCase=ignoreBusinessKeyCase,
             businessKey=BusinessKeyRequest(length=businessKeyLength),
             technicalDescription=technicalDescription,
@@ -66,6 +76,7 @@ def update_hub(
     projectName: str,
     hubIdOrName: str,
     name: str,
+    businessName: str,
     ignoreBusinessKeyCase: bool = False,
     businessKeyLength: int = 255,
     technicalDescription: str | None = None,
@@ -74,10 +85,13 @@ def update_hub(
     """
     Update a hub in a beVault project.
 
+    Requires beVault 3.12+ (businessName support).
+
     Args:
         projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
-        hubIdOrName: ID (GUID) or name of the hub to update
-        name: Name of the hub (mandatory, must be unique)
+        hubIdOrName: ID (GUID) or technical name of the hub to update
+        name: Technical name of the hub (mandatory, unique; max 25 chars; letters, digits, underscores only)
+        businessName: Business name of the hub (mandatory, unrestricted length and characters)
         ignoreBusinessKeyCase: Whether to ignore case in business key (default: False)
         businessKeyLength: Length of the business key (default: 255)
         technicalDescription: Technical description of the hub (optional)
@@ -88,10 +102,11 @@ def update_hub(
     """
     try:
         logger.info(
-            "update_hub: projectName=%s, hubIdOrName=%s, name=%s",
+            "update_hub: projectName=%s, hubIdOrName=%s, name=%s, businessName=%s",
             projectName,
             hubIdOrName,
             name,
+            businessName,
         )
 
         # Get project ID from project name
@@ -101,6 +116,7 @@ def update_hub(
         # Build the hub request
         hub_request = CreateHubRequest(
             name=name,
+            businessName=businessName,
             ignoreBusinessKeyCase=ignoreBusinessKeyCase,
             businessKey=BusinessKeyRequest(length=businessKeyLength),
             technicalDescription=technicalDescription,

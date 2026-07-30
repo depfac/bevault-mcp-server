@@ -36,6 +36,7 @@ def _transform_entity(
         "id": entity.id,
         "name": entity.name,
         "tableName": entity.tableName,
+        "businessName": entity.businessName,
         "businessDescription": entity.businessDescription,
         "technicalDescription": entity.technicalDescription,
     }

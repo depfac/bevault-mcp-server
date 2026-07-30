@@ -699,6 +699,7 @@ def map_columns_to_satellite(
     dataPackageIdOrName: str,
     stagingTableIdOrName: str,
     satelliteName: str,
+    satelliteBusinessName: str,
     columnNames: list[str],
     parentMappingId: str,
     parentType: str,
@@ -708,12 +709,16 @@ def map_columns_to_satellite(
     """
     Map staging table columns to a satellite.
 
+    Requires beVault 3.12+ (satelliteBusinessName support).
+
     Args:
         projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
         sourceSystemIdOrName: ID (GUID) or name of the source system (API accepts both)
         dataPackageIdOrName: ID (GUID) or name of the data package (API accepts both)
         stagingTableIdOrName: ID (GUID) or name of the staging table (will be resolved to ID if not GUID)
-        satelliteName: Name of the satellite. It will be prefixed with its parent name, no need to include it.
+        satelliteName: Technical name of the satellite (max 20 chars; letters, digits, underscores only).
+                      It will be prefixed with its parent name, no need to include it.
+        satelliteBusinessName: Business name of the satellite (mandatory, unrestricted length and characters)
         columnNames: List of column names that should be included in the satellite
         parentMappingId: ID (GUID) or name of the mapping to which the satellite should be attached to
         parentType: Type of parent mapping - either "hub" or "link"
@@ -731,12 +736,14 @@ def map_columns_to_satellite(
     try:
         logger.info(
             "map_columns_to_satellite: projectName=%s, sourceSystemIdOrName=%s, dataPackageIdOrName=%s, "
-            "stagingTableIdOrName=%s, satelliteName=%s, parentMappingId=%s, parentType=%s, isMultiActive=%s",
+            "stagingTableIdOrName=%s, satelliteName=%s, satelliteBusinessName=%s, parentMappingId=%s, "
+            "parentType=%s, isMultiActive=%s",
             projectName,
             sourceSystemIdOrName,
             dataPackageIdOrName,
             stagingTableIdOrName,
             satelliteName,
+            satelliteBusinessName,
             parentMappingId,
             parentType,
             isMultiActive,
@@ -821,6 +828,7 @@ def map_columns_to_satellite(
             parent_mapping_id=parent_mapping_id,
             parent_type=parentType,
             satellite_name=satelliteName,
+            satellite_business_name=satelliteBusinessName,
             satellite_columns=satellite_column_urls,
             staging_table_url=staging_table_url,
             is_multi_active=isMultiActive,
@@ -1026,6 +1034,7 @@ def update_staging_table_satellite_mapping(
     stagingTableIdOrName: str,
     satelliteMappingIdOrName: str,
     satelliteName: str,
+    satelliteBusinessName: str,
     columnNames: list[str],
     isMultiActive: bool = False,
     subSequenceColumn: str | None = None,
@@ -1035,13 +1044,17 @@ def update_staging_table_satellite_mapping(
 
     The parent mapping (hub or link) is automatically determined from the satellite mapping.
 
+    Requires beVault 3.12+ (satelliteBusinessName support).
+
     Args:
         projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
         sourceSystemIdOrName: ID (GUID) or name of the source system (API accepts both)
         dataPackageIdOrName: ID (GUID) or name of the data package (API accepts both)
         stagingTableIdOrName: ID (GUID) or name of the staging table (will be resolved to ID if not GUID)
         satelliteMappingIdOrName: ID (GUID) or name of the satellite mapping to update. Use the ID if available.
-        satelliteName: Name of the satellite. It will be prefixed with its parent name, no need to include it.
+        satelliteName: Technical name of the satellite (max 20 chars; letters, digits, underscores only).
+                      It will be prefixed with its parent name, no need to include it.
+        satelliteBusinessName: Business name of the satellite (mandatory, unrestricted length and characters)
         columnNames: List of column names that should be included in the satellite
         isMultiActive: Whether the satellite is multi-active (default: False). Unless explicitly asked by the user,
                       create descriptive satellite by leaving isMultiActive to false.
@@ -1057,13 +1070,15 @@ def update_staging_table_satellite_mapping(
     try:
         logger.info(
             "update_staging_table_satellite_mapping: projectName=%s, sourceSystemIdOrName=%s, dataPackageIdOrName=%s, "
-            "stagingTableIdOrName=%s, satelliteMappingIdOrName=%s, satelliteName=%s, isMultiActive=%s",
+            "stagingTableIdOrName=%s, satelliteMappingIdOrName=%s, satelliteName=%s, satelliteBusinessName=%s, "
+            "isMultiActive=%s",
             projectName,
             sourceSystemIdOrName,
             dataPackageIdOrName,
             stagingTableIdOrName,
             satelliteMappingIdOrName,
             satelliteName,
+            satelliteBusinessName,
             isMultiActive,
         )
 
@@ -1186,6 +1201,7 @@ def update_staging_table_satellite_mapping(
             parent_mapping_id=parent_mapping_id,
             parent_type=parent_mapping_type,
             satellite_name=satelliteName,
+            satellite_business_name=satelliteBusinessName,
             satellite_columns=satellite_column_urls,
             staging_table_url=staging_table_url,
             is_multi_active=isMultiActive,

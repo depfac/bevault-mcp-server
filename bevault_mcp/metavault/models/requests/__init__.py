@@ -2,6 +2,7 @@
 
 from .hub import BusinessKeyRequest, CreateHubRequest
 from .link import CreateLinkRequest, DependentChildColumn, HubReference, LinkType
+from .satellite_mapping import CreateSatelliteMappingRequest
 from .search import SearchParams
 from .source_system import CreateDataPackageRequest, CreateSourceSystemRequest
 from .staging_table import (
@@ -24,6 +25,7 @@ __all__ = [
     "CreateInformationMartRequest",
     "CreateInformationMartScriptRequest",
     "CreateLinkRequest",
+    "CreateSatelliteMappingRequest",
     "CreateSourceSystemRequest",
     "CreateStagingTableRequest",
     "DependentChildColumn",

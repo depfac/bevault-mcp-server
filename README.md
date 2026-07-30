@@ -37,6 +37,8 @@ This MCP server allows you to perform actions that users can do in the following
 
 The server exposes tools to interact with beVault's API using FastMCP with HTTP transport.
 
+> **Compatibility**: Hub/link create and update tools, and satellite mapping tools, require **beVault 3.12+** because they send the required `businessName` / `satelliteBusinessName` fields. Technical names remain constrained (hub: 25, link: 35, satellite: 20 characters; letters, digits, and underscores only).
+
 ## Features
 - `search_model`: search entities (Hubs, Links, Satellites, ReferenceTables) in a beVault project
 - `search_information_marts`: search and list information marts (with simplified script info)
@@ -330,6 +332,7 @@ For a complete guide on integrating the beVault MCP server with n8n—including 
 - Code style and linting: ruff (see `CONTRIBUTING.md` for details)
 - Python >= 3.13
 - Uses FastMCP for HTTP/Streamable transport support
+- Run unit tests with `pytest`
 
 ## Contributing
 
