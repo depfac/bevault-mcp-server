@@ -1,5 +1,17 @@
 # Changelog
 
+## [5.0.0](https://github.com/depfac/bevault-mcp-server/compare/v4.0.2...v5.0.0) (2026-08-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* **model:** create/update hub and link tools now require `businessName`; satellite mapping create/update requires `satelliteBusinessName`. Requires beVault 3.12+. Technical names are validated locally.
+
+### Features
+
+* **model:** require business names for hubs, links, and satellites ([c659356](https://github.com/depfac/bevault-mcp-server/commit/c659356bee75fa7fe97fa5d63f6f54efc8309c30))
+* **staging-tables:** require scale and precision for numeric columns of staging tables ([a34cc8b](https://github.com/depfac/bevault-mcp-server/commit/a34cc8b3a01b2e794c949148a56dc301fee57b9d))
+
 ## [4.0.2](https://github.com/depfac/bevault-mcp-server/compare/v4.0.1...v4.0.2) (2026-07-23)
 
 
