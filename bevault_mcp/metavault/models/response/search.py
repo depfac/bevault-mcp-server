@@ -12,6 +12,7 @@ class OptimizedHub(BaseModel):
     name: str
     entityType: Literal["Hub"] = "Hub"
     tableName: Optional[str] = None
+    businessName: Optional[str] = None
     businessDescription: Optional[str] = None
     technicalDescription: Optional[str] = None
     satelliteCount: Optional[int] = None
@@ -26,6 +27,7 @@ class OptimizedLink(BaseModel):
     name: str
     entityType: Literal["Link"] = "Link"
     tableName: Optional[str] = None
+    businessName: Optional[str] = None
     businessDescription: Optional[str] = None
     technicalDescription: Optional[str] = None
     linkType: Optional[str] = None
@@ -39,6 +41,7 @@ class OptimizedSatellite(BaseModel):
     name: str
     entityType: Literal["Satellite"] = "Satellite"
     tableName: Optional[str] = None
+    businessName: Optional[str] = None
     businessDescription: Optional[str] = None
     technicalDescription: Optional[str] = None
     parentType: Optional[str] = None
@@ -54,6 +57,7 @@ class OptimizedReferenceTable(BaseModel):
     name: str
     entityType: Literal["ReferenceTable"] = "ReferenceTable"
     tableName: Optional[str] = None
+    businessName: Optional[str] = None
     businessDescription: Optional[str] = None
     technicalDescription: Optional[str] = None
     mappingCount: Optional[int] = None

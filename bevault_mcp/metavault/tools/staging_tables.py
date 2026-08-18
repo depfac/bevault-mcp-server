@@ -61,6 +61,8 @@ def create_staging_table(
                - name (str, required): Column name
                - dataType (str, required): Column type (DateTime, Date, Text, Boolean, Integer, Numeric, or API types)
                - length (int, optional): Length for String/Text types (required for Text/String)
+               - precision (int, optional): Precision for Numeric/VarNumeric types (required for Numeric/VarNumeric)
+               - scale (int, optional): Scale for Numeric/VarNumeric types (required for Numeric/VarNumeric)
                - businessDescription (str, optional): Business description
                - businessName (str, optional): Business name
                - technicalDescription (str, optional): Technical description
@@ -99,6 +101,8 @@ def create_staging_table(
                         name=col["name"],
                         dataType=col["dataType"],  # Type mapping happens in the model
                         length=col.get("length"),
+                        precision=col.get("precision"),
+                        scale=col.get("scale"),
                         businessDescription=col.get("businessDescription"),
                         businessName=col.get("businessName"),
                         technicalDescription=col.get("technicalDescription"),

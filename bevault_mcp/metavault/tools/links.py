@@ -49,6 +49,7 @@ client = get_metavault_client()
 def create_link(
     projectName: str,
     name: str,
+    businessName: str,
     linkType: str = "Relationship",
     dependentChildColumns: list[dict[str, str]] | None = None,
     hubReferences: list[dict[str, Any]] | None = None,
@@ -58,9 +59,12 @@ def create_link(
     """
     Create a link in a beVault project.
 
+    Requires beVault 3.12+ (businessName support).
+
     Args:
         projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
-        name: Name of the link (mandatory, must be unique)
+        name: Technical name of the link (mandatory, unique; max 35 chars; letters, digits, underscores only)
+        businessName: Business name of the link (mandatory, unrestricted length and characters)
         linkType: Type of link - Relationship, Hierarchy, Transaction, or SameAs (default: Relationship)
         dependentChildColumns: List of dependent child columns, each with 'columnName' and 'dataType'
         hubReferences: List of hub references, each with 'columnName', 'hubName', and 'order'
@@ -72,7 +76,12 @@ def create_link(
         The created link entity as a dictionary.
     """
     try:
-        logger.info("create_link: projectName=%s, name=%s", projectName, name)
+        logger.info(
+            "create_link: projectName=%s, name=%s, businessName=%s",
+            projectName,
+            name,
+            businessName,
+        )
 
         # Get project ID from project name
         project_id = client.projects.get_by_name(projectName)
@@ -106,6 +115,7 @@ def create_link(
         # Build the link request
         link_request = CreateLinkRequest(
             name=name,
+            businessName=businessName,
             linkType=link_type_enum,
             dependentChildColumns=dependent_columns,
             hubReferences=hub_refs,
@@ -179,6 +189,7 @@ def update_link(
     projectName: str,
     linkIdOrName: str,
     name: str,
+    businessName: str,
     linkType: str = "Relationship",
     dependentChildColumns: list[dict[str, str]] | None = None,
     hubReferences: list[dict[str, Any]] | None = None,
@@ -188,10 +199,13 @@ def update_link(
     """
     Update a link in a beVault project.
 
+    Requires beVault 3.12+ (businessName support).
+
     Args:
         projectName: Technical name of the project (use technicalName from get_projects; will be resolved to project ID)
-        linkIdOrName: ID (GUID) or name of the link to update
-        name: Name of the link (mandatory, must be unique)
+        linkIdOrName: ID (GUID) or technical name of the link to update
+        name: Technical name of the link (mandatory, unique; max 35 chars; letters, digits, underscores only)
+        businessName: Business name of the link (mandatory, unrestricted length and characters)
         linkType: Type of link - Relationship, Hierarchy, Transaction, or SameAs (default: Relationship)
         dependentChildColumns: List of dependent child columns, each with 'columnName' and 'dataType'
         hubReferences: List of hub references, each with 'columnName', 'hubName', and 'order'
@@ -204,10 +218,11 @@ def update_link(
     """
     try:
         logger.info(
-            "update_link: projectName=%s, linkIdOrName=%s, name=%s",
+            "update_link: projectName=%s, linkIdOrName=%s, name=%s, businessName=%s",
             projectName,
             linkIdOrName,
             name,
+            businessName,
         )
 
         # Get project ID from project name
@@ -242,6 +257,7 @@ def update_link(
         # Build the link request
         link_request = CreateLinkRequest(
             name=name,
+            businessName=businessName,
             linkType=link_type_enum,
             dependentChildColumns=dependent_columns,
             hubReferences=hub_refs,
