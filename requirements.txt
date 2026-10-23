@@ -8,3 +8,4 @@ python-dotenv>=1.2.4
 sentry-sdk>=2.72.0
 tenacity>=9.2.1
 uvicorn>=0.54.0
+
