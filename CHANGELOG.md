@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.0.1](https://github.com/depfac/bevault-mcp-server/compare/v5.0.0...v5.0.1) (2026-10-23)
+
+
+### Bug Fixes
+
+* **deps:** upgrade dependencies ([5092e18](https://github.com/depfac/bevault-mcp-server/commit/5092e18825d07a71ae8bf79a481346caf261914d))
+
 ## [5.0.0](https://github.com/depfac/bevault-mcp-server/compare/v4.0.2...v5.0.0) (2026-08-18)
 
 
